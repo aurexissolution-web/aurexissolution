@@ -6,13 +6,13 @@ import { getStorage, connectStorageEmulator } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBYmTVBYqUDioNmXUA3RFO6WQjlAkSUxvo",
-  authDomain: "aurexissolutionwebsite.firebaseapp.com",
-  projectId: "aurexissolutionwebsite",
-  storageBucket: "aurexissolutionwebsite.appspot.com",
-  messagingSenderId: "1059150234102",
-  appId: "1:1059150234102:web:0feea8b23ef66aafb507d7",
-  measurementId: "G-C8B63GHDQD"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBYmTVBYqUDioNmXUA3RFO6WQjlAkSUxvo",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "aurexissolutionwebsite.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "aurexissolutionwebsite",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "aurexissolutionwebsite.appspot.com",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1059150234102",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:1059150234102:web:0feea8b23ef66aafb507d7",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-C8B63GHDQD"
 };
 
 // Initialize Firebase
