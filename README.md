@@ -72,7 +72,7 @@ Click the button above to deploy instantly! After deployment, add your Firebase 
 
 ## 📱 Live Demo
 
-🌐 **Website**: Coming soon after deployment!
+🌐 **Website**: [https://aurexissolution.netlify.app](https://aurexissolution.netlify.app) ✅ **LIVE NOW!**
 
 **GitHub Repository**: [https://github.com/jrh4ck3r/aurexis-solution](https://github.com/jrh4ck3r/aurexis-solution)
 
