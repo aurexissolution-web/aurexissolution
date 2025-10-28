@@ -3,6 +3,7 @@ import Header from '../components/public/Header';
 import Hero from '../components/public/Hero';
 import Services from '../components/public/Services';
 import TechnologyShowcase from '../components/public/TechnologyShowcase';
+import Portfolio3D from '../components/public/Portfolio3D';
 import Testimonials from '../components/public/Testimonials';
 import Footer from '../components/public/Footer';
 
@@ -14,6 +15,7 @@ const HomePage: React.FC = () => {
         <Hero />
         <Services />
         <TechnologyShowcase />
+        <Portfolio3D />
         <Testimonials />
       </main>
       <Footer />
