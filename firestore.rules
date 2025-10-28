@@ -1,0 +1,272 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ⚠️ SECURITY NOTICE:
+    // This app uses a custom localStorage-based authentication system.
+    // Some rules are temporarily open (allow: if true) because Firebase Auth
+    // is not integrated. In production, you should:
+    // 1. Integrate Firebase Authentication properly
+    // 2. Restrict rules to authenticated users only
+    // 3. Add rate limiting to prevent abuse
+    // 4. Add data validation rules
+
+    // Role checking functions
+    function isAdmin() {
+      return request.auth != null && 
+             request.auth.token.email != null &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isHR() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'hr';
+    }
+
+    function isFinanceExecutive() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'finance_executive';
+    }
+
+    function isMarketingHead() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'marketing_head';
+    }
+
+    function isManager() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'manager';
+    }
+
+    function isTeamLead() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team_lead';
+    }
+
+    function isNormalEmployee() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'normal_employee';
+    }
+
+    function isCustomer() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'customer';
+    }
+
+    function isEmployee() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'employee';
+    }
+
+    function isFreelancer() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'freelancer';
+    }
+
+    // Helper functions for permissions
+    function isAdminOrHR() {
+      return isAdmin() || isHR();
+    }
+
+    function hasFinancialAccess() {
+      return isAdmin() || isFinanceExecutive();
+    }
+
+    function hasMarketingAccess() {
+      return isAdmin() || isMarketingHead();
+    }
+
+    function hasManagementAccess() {
+      return isAdmin() || isManager();
+    }
+
+    // Public content - temporarily open while using custom auth system
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /services/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /projects/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /testimonials/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /siteContent/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Founders - temporarily open for testing (will fix auth system)
+    match /founders/{docId} {
+      allow read: if true;
+      allow write: if true; // Temporarily open while fixing auth
+    }
+
+    // Blog posts - temporarily open for custom auth system
+    match /blog/{docId} {
+      allow read: if true;
+      allow write: if true; // Temporarily open for AI blog generation
+    }
+
+    match /portfolio/{docId} {
+      allow read: if true;
+      allow write: if true; // Temporarily open while using custom auth
+    }
+
+    // User management - temporarily open while using custom auth system
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /users/{userId} {
+      allow read: if true; // Allow reading users for login purposes
+      allow create: if true; // Temporarily open for admin panel user creation
+      allow update, delete: if true; // Temporarily open while fixing auth
+    }
+
+    // Messages - allow reading and writing for all authenticated users temporarily
+    match /messages/{docId} {
+      allow read, write: if true; // Temporarily open for testing
+    }
+
+    // Chat messages - allow anyone to create and read messages
+    match /chatMessages/{docId} {
+      allow read: if true; // Allow anyone to read messages
+      allow create: if true; // Allow anonymous users to create messages
+      allow update: if true; // Temporarily open while using custom auth
+    }
+
+    // Invoices - temporarily open while using custom auth system
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /invoices/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Quotations - temporarily open while using custom auth system
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /quotations/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Audit Logs - Write-only for users, read-only for admins (temporarily open)
+    match /auditLogs/{docId} {
+      allow read: if true; // Temporarily open while using custom auth
+      allow create: if true; // Anyone can create audit logs
+      allow update, delete: if false; // Audit logs are immutable
+    }
+
+    // Tickets - temporarily open while using custom auth system
+    match /tickets/{docId} {
+      allow read, write: if true;
+    }
+
+    // Chat Rooms - allow anyone to create and read chat rooms
+    match /chatRooms/{roomId} {
+      allow read: if true; // Allow anyone to read chat rooms
+      allow create: if true; // Allow anonymous users to create chat rooms
+      allow update: if true; // Allow anyone to update chat rooms (for last message updates)
+    }
+
+    // Blog posts - temporarily open for AI blog generation
+    match /posts/{postId} {
+      allow read: if true;
+      allow write: if true; // Temporarily open for AI blog generation
+    }
+
+    // Time tracking - temporarily open while fixing authentication integration
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /timeTracking/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Telegram configuration - temporarily open while using custom auth system
+    match /telegramConfig/{docId} {
+      allow read: if true; // Anyone can read (needed for notifications)
+      allow write: if true; // Temporarily open while using custom auth
+    }
+
+    // AI Settings - temporarily open for testing (since using custom auth)
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /aiSettings/{docId} {
+      allow read, write: if true;
+    }
+
+    // Test collection - completely open for testing
+    match /test/{docId} {
+      allow read, write, create, delete: if true;
+    }
+
+    // Employee Profiles - temporarily open while using custom auth system
+    match /employeeProfiles/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Tasks - temporarily open while fixing authentication integration
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /tasks/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Leave Requests - temporarily open while using custom auth system
+    match /leaveRequests/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Work Reports - temporarily open while using custom auth system
+    match /workReports/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Attachments - temporarily open while using custom auth system
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /attachments/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Project Requests - temporarily open while using custom auth system
+    // Customers create, admins review and approve
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /projectRequests/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Project feedback - customers can submit, admins can view
+    match /projectFeedback/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Payment Receipts - temporarily open while using custom auth system
+    // Customers upload receipts, finance/admin review
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /paymentReceipts/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Payment Invoices - temporarily open while using custom auth system
+    // Admin/Finance create invoices, customers view
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /paymentInvoices/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+
+    // Commissions - temporarily open while using custom auth system
+    // Freelancers create when completing tasks, finance/admin process payments
+    // TODO: Integrate Firebase Auth with custom login system for proper security
+    match /commissions/{docId} {
+      allow read, write, create, update, delete: if true;
+    }
+  }
+}

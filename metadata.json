@@ -1,0 +1,5 @@
+{
+  "name": "Aurexis Solution IT Website",
+  "description": "A full-fledged, production-ready IT website for Aurexis Solution, featuring a dynamic admin panel for content management. The public site showcases services, portfolio, and testimonials, while the admin area allows for real-time updates to all content.",
+  "requestFramePermissions": []
+}

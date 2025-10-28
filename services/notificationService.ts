@@ -1,0 +1,205 @@
+// services/notificationService.ts
+// Enhanced notification service for project request status changes
+
+import { collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
+import { db } from '../firebase/config';
+
+export interface Notification {
+  id?: string;
+  recipientEmail: string;
+  recipientUniqueId: string;
+  type: 'project_request_approved' | 'project_request_rejected' | 'project_request_need_info' | 'project_assigned' | 'project_updated';
+  title: string;
+  message: string;
+  data?: any; // Additional data (e.g., project ID, request ID)
+  read: boolean;
+  createdAt: any;
+}
+
+/**
+ * Send notification when project request status changes
+ */
+export const notifyProjectRequestStatusChange = async (
+  customerEmail: string,
+  customerUniqueId: string,
+  status: 'approved' | 'rejected' | 'need-more-info',
+  projectTitle: string,
+  adminNotes?: string,
+  rejectionReason?: string,
+  assignedTeamLead?: string
+): Promise<void> => {
+  try {
+    let notification: Omit<Notification, 'id'>;
+
+    if (status === 'approved') {
+      notification = {
+        recipientEmail: customerEmail,
+        recipientUniqueId: customerUniqueId,
+        type: 'project_request_approved',
+        title: '✅ Project Request Approved!',
+        message: `Your project "${projectTitle}" has been approved and assigned to ${assignedTeamLead || 'our team'}. ${adminNotes || 'We will start working on it soon.'}`,
+        data: { projectTitle, status, adminNotes, assignedTeamLead },
+        read: false,
+        createdAt: serverTimestamp()
+      };
+    } else if (status === 'rejected') {
+      notification = {
+        recipientEmail: customerEmail,
+        recipientUniqueId: customerUniqueId,
+        type: 'project_request_rejected',
+        title: '❌ Project Request Update',
+        message: `Unfortunately, we cannot proceed with your project "${projectTitle}". ${rejectionReason || 'Please contact us for more information.'}`,
+        data: { projectTitle, status, rejectionReason },
+        read: false,
+        createdAt: serverTimestamp()
+      };
+    } else {
+      notification = {
+        recipientEmail: customerEmail,
+        recipientUniqueId: customerUniqueId,
+        type: 'project_request_need_info',
+        title: '💬 More Information Needed',
+        message: `We need additional information about your project "${projectTitle}". ${adminNotes || 'Please check your request and respond.'}`,
+        data: { projectTitle, status, adminNotes },
+        read: false,
+        createdAt: serverTimestamp()
+      };
+    }
+
+    await addDoc(collection(db, 'notifications'), notification);
+    console.log('✅ Notification sent successfully');
+  } catch (error) {
+    console.error('❌ Error sending notification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Send notification when project is assigned to team lead
+ */
+export const notifyTeamLeadProjectAssigned = async (
+  teamLeadEmail: string,
+  teamLeadUniqueId: string,
+  projectTitle: string,
+  customerName: string,
+  projectId: string
+): Promise<void> => {
+  try {
+    const notification: Omit<Notification, 'id'> = {
+      recipientEmail: teamLeadEmail,
+      recipientUniqueId: teamLeadUniqueId,
+      type: 'project_assigned',
+      title: '🎯 New Project Assigned',
+      message: `You have been assigned a new project: "${projectTitle}" from customer ${customerName}. Check your dashboard for details.`,
+      data: { projectTitle, customerName, projectId },
+      read: false,
+      createdAt: serverTimestamp()
+    };
+
+    await addDoc(collection(db, 'notifications'), notification);
+    console.log('✅ Team lead notified successfully');
+  } catch (error) {
+    console.error('❌ Error notifying team lead:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get recent notifications for a user
+ */
+export const getUserNotifications = async (
+  userEmail: string,
+  maxResults: number = 10
+): Promise<Notification[]> => {
+  try {
+    const q = query(
+      collection(db, 'notifications'),
+      where('recipientEmail', '==', userEmail),
+      orderBy('createdAt', 'desc'),
+      limit(maxResults)
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+  } catch (error) {
+    console.error('❌ Error fetching notifications:', error);
+    return [];
+  }
+};
+
+/**
+ * Check for duplicate project requests (simple title similarity)
+ */
+export const checkForDuplicateRequest = async (
+  customerEmail: string,
+  projectTitle: string
+): Promise<{ isDuplicate: boolean; similarRequest?: any }> => {
+  try {
+    const q = query(
+      collection(db, 'projectRequests'),
+      where('customerEmail', '==', customerEmail),
+      where('status', 'in', ['pending', 'approved'])
+    );
+
+    const snapshot = await getDocs(q);
+    const existingRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // Check for similar titles (case-insensitive, basic matching)
+    const normalizedTitle = projectTitle.toLowerCase().trim();
+    const similarRequest = existingRequests.find(req => {
+      const existingTitle = (req.title || '').toLowerCase().trim();
+      return existingTitle === normalizedTitle || 
+             existingTitle.includes(normalizedTitle) ||
+             normalizedTitle.includes(existingTitle);
+    });
+
+    return {
+      isDuplicate: !!similarRequest,
+      similarRequest
+    };
+  } catch (error) {
+    console.error('❌ Error checking for duplicates:', error);
+    return { isDuplicate: false };
+  }
+};
+
+/**
+ * Legacy functions for NotificationBell component compatibility
+ */
+export const generateTaskNotifications = async (): Promise<Notification[]> => {
+  // Placeholder for backwards compatibility with NotificationBell
+  return [];
+};
+
+export const getNotificationCount = (notifications: Notification[]): number => {
+  return notifications.filter(n => !n.read).length;
+};
+
+export const formatNotificationTime = (timestamp: any): string => {
+  if (!timestamp) return '';
+  try {
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return date.toLocaleDateString();
+  } catch {
+    return '';
+  }
+};
+
+export const requestNotificationPermission = async (): Promise<boolean> => {
+  // Browser notification permission (for future enhancement)
+  if ('Notification' in window && Notification.permission === 'default') {
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
+  }
+  return Notification.permission === 'granted';
+};

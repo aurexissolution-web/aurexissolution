@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Customer Projects</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #00ff00; }
+        .project { background: #2a2a2a; padding: 15px; margin: 10px 0; border: 1px solid #00ff00; }
+        .error { color: #ff0000; }
+        .success { color: #00ff00; }
+        .info { color: #ffaa00; }
+        button { background: #00ff00; color: #000; padding: 10px 20px; border: none; cursor: pointer; margin: 5px; }
+        input { padding: 10px; background: #2a2a2a; border: 1px solid #00ff00; color: #00ff00; width: 300px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Customer Project Debug Tool</h1>
+    
+    <div>
+        <label>Enter Customer Email: </label>
+        <input type="email" id="customerEmail" placeholder="customer@example.com">
+        <button onclick="checkProjects()">Check Projects</button>
+        <button onclick="fixExistingProjects()">Fix Existing Projects</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBfQhZ7Y4yWMWVjkfOYZCp1Xx0-j_y7I4s",
+            authDomain: "aurexissolutionwebsite.firebaseapp.com",
+            projectId: "aurexissolutionwebsite",
+            storageBucket: "aurexissolutionwebsite.firebasestorage.app",
+            messagingSenderId: "430014889697",
+            appId: "1:430014889697:web:1ec9cd35f6ae13e85dc9e9"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        async function checkProjects() {
+            const email = document.getElementById('customerEmail').value;
+            if (!email) {
+                alert('Please enter customer email');
+                return;
+            }
+
+            const output = document.getElementById('output');
+            output.innerHTML = '<p class="info">🔄 Checking projects...</p>';
+
+            try {
+                // Get customer user
+                const usersSnapshot = await db.collection('users').where('email', '==', email).get();
+                if (usersSnapshot.empty) {
+                    output.innerHTML = '<p class="error">❌ Customer not found with email: ' + email + '</p>';
+                    return;
+                }
+
+                const customer = usersSnapshot.docs[0].data();
+                const customerUniqueId = customer.uniqueId;
+                
+                output.innerHTML = '<p class="success">✅ Found customer: ' + customer.name + ' (ID: ' + customerUniqueId + ')</p>';
+
+                // Get all projects
+                const projectsSnapshot = await db.collection('projects').get();
+                const allProjects = projectsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                
+                output.innerHTML += '<p class="info">📊 Total projects in database: ' + allProjects.length + '</p>';
+
+                // Check project requests
+                const requestsSnapshot = await db.collection('projectRequests')
+                    .where('customerEmail', '==', email)
+                    .get();
+                
+                output.innerHTML += '<p class="info">📋 Project requests by customer: ' + requestsSnapshot.size + '</p>';
+                
+                requestsSnapshot.docs.forEach(doc => {
+                    const req = doc.data();
+                    output.innerHTML += '<div class="project">';
+                    output.innerHTML += '<strong>Request: ' + req.title + '</strong><br>';
+                    output.innerHTML += 'Status: ' + req.status + '<br>';
+                    output.innerHTML += 'Submitted: ' + (req.submittedAt ? new Date(req.submittedAt.toDate()).toLocaleDateString() : 'N/A') + '<br>';
+                    if (req.assignedToTeamLead) {
+                        output.innerHTML += 'Assigned to: ' + req.assignedToTeamLead + '<br>';
+                    }
+                    output.innerHTML += '</div>';
+                });
+
+                // Filter projects for customer
+                const directlyAssigned = allProjects.filter(p => 
+                    p.assignedTo === customerUniqueId && p.assignedType === 'customer'
+                );
+                
+                const requestedProjects = allProjects.filter(p => 
+                    p.customerUniqueId === customerUniqueId
+                );
+
+                output.innerHTML += '<p class="info">🎯 Directly assigned to customer: ' + directlyAssigned.length + '</p>';
+                output.innerHTML += '<p class="info">🎯 Requested by customer (with customerUniqueId): ' + requestedProjects.length + '</p>';
+
+                // Show all projects
+                output.innerHTML += '<h3>All Projects:</h3>';
+                allProjects.forEach(project => {
+                    const isVisible = (project.assignedTo === customerUniqueId && project.assignedType === 'customer') ||
+                                    project.customerUniqueId === customerUniqueId;
+                    
+                    output.innerHTML += '<div class="project" style="border-color: ' + (isVisible ? '#00ff00' : '#ff0000') + '">';
+                    output.innerHTML += '<strong>' + project.title + '</strong> ' + (isVisible ? '✅ VISIBLE' : '❌ HIDDEN') + '<br>';
+                    output.innerHTML += 'Status: ' + project.status + '<br>';
+                    output.innerHTML += 'Assigned To: ' + project.assignedTo + ' (' + project.assignedType + ')<br>';
+                    output.innerHTML += 'Customer UID: ' + (project.customerUniqueId || 'NOT SET ❌') + '<br>';
+                    output.innerHTML += 'Customer Name: ' + (project.customerName || 'NOT SET') + '<br>';
+                    output.innerHTML += '</div>';
+                });
+
+            } catch (error) {
+                output.innerHTML += '<p class="error">❌ Error: ' + error.message + '</p>';
+                console.error(error);
+            }
+        }
+
+        async function fixExistingProjects() {
+            const email = document.getElementById('customerEmail').value;
+            if (!email) {
+                alert('Please enter customer email');
+                return;
+            }
+
+            if (!confirm('This will update existing projects to link them to the customer. Continue?')) {
+                return;
+            }
+
+            const output = document.getElementById('output');
+            output.innerHTML = '<p class="info">🔄 Fixing projects...</p>';
+
+            try {
+                // Get customer
+                const usersSnapshot = await db.collection('users').where('email', '==', email).get();
+                if (usersSnapshot.empty) {
+                    output.innerHTML = '<p class="error">❌ Customer not found</p>';
+                    return;
+                }
+
+                const customer = usersSnapshot.docs[0].data();
+                
+                // Get approved requests
+                const requestsSnapshot = await db.collection('projectRequests')
+                    .where('customerEmail', '==', email)
+                    .where('status', '==', 'approved')
+                    .get();
+
+                output.innerHTML += '<p class="success">Found ' + requestsSnapshot.size + ' approved requests</p>';
+
+                let fixed = 0;
+                
+                for (const requestDoc of requestsSnapshot.docs) {
+                    const request = requestDoc.data();
+                    
+                    // Find matching project by title
+                    const projectsSnapshot = await db.collection('projects')
+                        .where('title', '==', request.title)
+                        .get();
+                    
+                    for (const projectDoc of projectsSnapshot.docs) {
+                        const project = projectDoc.data();
+                        
+                        // Only update if customerUniqueId is missing
+                        if (!project.customerUniqueId) {
+                            await db.collection('projects').doc(projectDoc.id).update({
+                                customerUniqueId: customer.uniqueId,
+                                customerName: customer.name || customer.email,
+                                customerEmail: customer.email
+                            });
+                            
+                            output.innerHTML += '<p class="success">✅ Fixed: ' + project.title + '</p>';
+                            fixed++;
+                        }
+                    }
+                }
+
+                output.innerHTML += '<p class="success">✅ Fixed ' + fixed + ' projects!</p>';
+                output.innerHTML += '<p class="info">Refresh the customer dashboard now!</p>';
+
+            } catch (error) {
+                output.innerHTML += '<p class="error">❌ Error: ' + error.message + '</p>';
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
+
