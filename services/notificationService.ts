@@ -8,10 +8,10 @@ export interface Notification {
   id?: string;
   recipientEmail: string;
   recipientUniqueId: string;
-  type: 'project_request_approved' | 'project_request_rejected' | 'project_request_need_info' | 'project_assigned' | 'project_updated';
+  type: 'project_request_approved' | 'project_request_rejected' | 'project_request_need_info' | 'project_assigned' | 'project_updated' | 'task_completed' | 'payment_receipt_uploaded';
   title: string;
   message: string;
-  data?: any; // Additional data (e.g., project ID, request ID)
+  data?: any; // Additional data (e.g., project ID, request ID, task ID)
   read: boolean;
   createdAt: any;
 }
@@ -160,6 +160,78 @@ export const checkForDuplicateRequest = async (
   } catch (error) {
     console.error('❌ Error checking for duplicates:', error);
     return { isDuplicate: false };
+  }
+};
+
+/**
+ * Notify finance team when freelancer completes a task
+ */
+export const notifyFinanceTaskCompleted = async (
+  taskId: string,
+  taskTitle: string,
+  freelancerEmail: string,
+  freelancerName: string,
+  commissionAmount: number
+): Promise<void> => {
+  try {
+    // Get all finance users
+    const financeQuery = query(
+      collection(db, 'users'),
+      where('role', '==', 'finance')
+    );
+    
+    const financeSnapshot = await getDocs(financeQuery);
+    
+    // Send notification to each finance user
+    for (const financeDoc of financeSnapshot.docs) {
+      const financeUser = financeDoc.data();
+      
+      const notification: Omit<Notification, 'id'> = {
+        recipientEmail: financeUser.email,
+        recipientUniqueId: financeUser.uniqueId || financeUser.email,
+        type: 'task_completed',
+        title: '💰 Task Completed - Payment Required',
+        message: `${freelancerName} (${freelancerEmail}) has completed task "${taskTitle}". Commission amount: RM ${commissionAmount.toFixed(2)}. Please process payment and upload receipt.`,
+        data: { taskId, taskTitle, freelancerEmail, freelancerName, commissionAmount },
+        read: false,
+        createdAt: serverTimestamp()
+      };
+
+      await addDoc(collection(db, 'notifications'), notification);
+    }
+    
+    console.log('✅ Finance team notified of task completion');
+  } catch (error) {
+    console.error('❌ Error notifying finance team:', error);
+  }
+};
+
+/**
+ * Notify freelancer when payment receipt is uploaded
+ */
+export const notifyFreelancerPaymentReceived = async (
+  freelancerEmail: string,
+  freelancerUniqueId: string,
+  taskTitle: string,
+  amount: number,
+  receiptUrl: string
+): Promise<void> => {
+  try {
+    const notification: Omit<Notification, 'id'> = {
+      recipientEmail: freelancerEmail,
+      recipientUniqueId: freelancerUniqueId,
+      type: 'payment_receipt_uploaded',
+      title: '💵 Payment Received!',
+      message: `Your payment of RM ${amount.toFixed(2)} for task "${taskTitle}" has been processed. Receipt is now available for download in your dashboard.`,
+      data: { taskTitle, amount, receiptUrl },
+      read: false,
+      createdAt: serverTimestamp()
+    };
+
+    await addDoc(collection(db, 'notifications'), notification);
+    console.log('✅ Freelancer notified of payment receipt');
+  } catch (error) {
+    console.error('❌ Error notifying freelancer:', error);
   }
 };
 

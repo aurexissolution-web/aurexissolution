@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { db } from '../firebase/config';
 import { collection, query, where, getDocs, updateDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { notifyFinanceTaskCompleted } from '../services/notificationService';
 
 type TabType = 'progression' | 'commissions' | 'details';
 
@@ -221,13 +222,23 @@ const FreelancerDashboard: React.FC = () => {
         const commissionRef = await addDoc(collection(db, 'commissions'), commissionData);
         console.log('✅ Commission record created! ID:', commissionRef.id);
         console.log('💰 Finance department should now see RM', commissionAmount.toFixed(2), 'pending');
+        
+        // Notify finance team
+        await notifyFinanceTaskCompleted(
+          selectedTask.id,
+          selectedTask.title,
+          user.email,
+          user.name || user.email,
+          commissionAmount
+        );
+        console.log('✅ Finance team notified!');
       } else {
         console.warn('⚠️ NO COMMISSION CREATED - Commission amount is 0 or undefined!');
         console.warn('   This task does not have commission details set.');
         console.warn('   Make sure admin set budget & commission rate when creating the task.');
       }
 
-      alert('✅ Task submitted successfully! Admin can now download your files. Finance will process your commission.');
+      alert('✅ Task submitted successfully! Admin can now download your files. Finance has been notified and will process your commission payment.');
       setSelectedTask(null);
       setUploadedFiles([]);
       setProgressNotes('');
@@ -557,6 +568,7 @@ const FreelancerDashboard: React.FC = () => {
                     <th className="px-4 py-3 text-center text-xs font-semibold text-gray-300 uppercase">Rate</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-300 uppercase">Commission</th>
                     <th className="px-4 py-3 text-center text-xs font-semibold text-gray-300 uppercase">Payment Status</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-300 uppercase">Receipt</th>
                       </tr>
                     </thead>
                 <tbody className="divide-y divide-gray-700">
@@ -589,6 +601,23 @@ const FreelancerDashboard: React.FC = () => {
                             Paid: {new Date(commission.paymentDate).toLocaleDateString()}
                           </div>
                         )}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            {(commission as any).paymentReceipt ? (
+                              <a
+                                href={(commission as any).paymentReceipt}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition-colors"
+                              >
+                                <Download className="h-4 w-4" />
+                                Download
+                              </a>
+                            ) : commission.status === 'paid' ? (
+                              <span className="text-gray-500 text-xs">Processing...</span>
+                            ) : (
+                              <span className="text-gray-600 text-xs">-</span>
+                            )}
                           </td>
                         </tr>
                       ))}

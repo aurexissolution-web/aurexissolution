@@ -13,7 +13,8 @@ import {
   X
 } from 'lucide-react';
 import { db } from '../../firebase/config';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
+import { notifyFreelancerPaymentReceived } from '../../services/notificationService';
 
 const FinanceCommissions: React.FC = () => {
   const { commissions } = useAppContext();
@@ -73,6 +74,9 @@ const FinanceCommissions: React.FC = () => {
       const commissionRef = doc(db, 'commissions', selectedCommission.id);
       
       if (action === 'approve') {
+        // Store receipt URL for notification
+        const receiptUrl = paymentReceipt?.fileUrl || '';
+        
         await updateDoc(commissionRef, {
           status: 'paid',
           paymentDate: serverTimestamp(),
@@ -84,6 +88,21 @@ const FinanceCommissions: React.FC = () => {
           processedBy: 'Finance Team',
           updatedAt: serverTimestamp()
         });
+        
+        // Get freelancer's unique ID from users collection
+        const usersRef = doc(db, 'users', selectedCommission.freelancerId || selectedCommission.freelancerEmail);
+        const userDoc = await getDoc(usersRef);
+        const freelancerUniqueId = userDoc.exists() ? userDoc.data().uniqueId || selectedCommission.freelancerEmail : selectedCommission.freelancerEmail;
+        
+        // Notify freelancer
+        await notifyFreelancerPaymentReceived(
+          selectedCommission.freelancerEmail,
+          freelancerUniqueId,
+          selectedCommission.taskTitle,
+          selectedCommission.commissionAmount,
+          receiptUrl
+        );
+        
         alert('✅ Payment approved and freelancer notified!');
       } else {
         await updateDoc(commissionRef, {
