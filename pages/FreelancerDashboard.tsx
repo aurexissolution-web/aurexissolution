@@ -57,6 +57,9 @@ interface Commission {
 }
 
 const FreelancerDashboard: React.FC = () => {
+  // VERSION CHECK - If you see this in console, you're running the LATEST code
+  console.log('🚀 FREELANCER DASHBOARD LOADED - VERSION: 2024-10-29-FIX-FINANCE-NOTI');
+  
   const { user, logout, tasks: contextTasks, commissions: contextCommissions } = useAppContext();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('progression');
