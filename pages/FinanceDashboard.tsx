@@ -24,6 +24,7 @@ import {
   Receipt
 } from 'lucide-react';
 import FinanceCommissions from '../components/admin/FinanceCommissions';
+import NotificationBell from '../components/admin/NotificationBell';
 
 const FinanceDashboard: React.FC = () => {
   const { user, paymentReceipts, paymentInvoices, invoices, projects, financialMetrics, attendanceRecords, logout , isLoggingOut } = useAppContext();
@@ -248,6 +249,11 @@ const FinanceDashboard: React.FC = () => {
 
         {/* Main Content */}
         <main className={`flex-1 p-8 overflow-y-auto ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+          {/* Notification Bell - Top Right */}
+          <div className="flex justify-end mb-4">
+            <NotificationBell />
+          </div>
+
           {activeTab === 'overview' && (
             <div>
               <div className="flex items-center justify-between mb-6">

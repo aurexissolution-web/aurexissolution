@@ -22,6 +22,7 @@ import {
 import { db } from '../firebase/config';
 import { collection, query, where, getDocs, updateDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { notifyFinanceTaskCompleted } from '../services/notificationService';
+import NotificationBell from '../components/admin/NotificationBell';
 
 type TabType = 'progression' | 'commissions' | 'details';
 
@@ -939,6 +940,11 @@ const FreelancerDashboard: React.FC = () => {
 
         {/* Main Content */}
         <main className="flex-1 p-8 overflow-y-auto bg-gray-900">
+          {/* Notification Bell - Top Right */}
+          <div className="flex justify-end mb-4">
+            <NotificationBell />
+          </div>
+
           {renderContent()}
         </main>
       </div>
