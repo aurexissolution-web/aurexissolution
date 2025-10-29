@@ -887,14 +887,14 @@ const FreelancerDashboard: React.FC = () => {
   };
                       
                       return (
-    <div className="min-h-screen bg-gray-900">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="flex h-screen">
         {/* Sidebar */}
-        <aside className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
-          <div className="p-6 bg-gray-800 border-b border-gray-700">
-            <h1 className="text-2xl font-bold text-white">🎯 Freelancer Portal</h1>
-            <p className="text-sm text-gray-300 mt-1 font-semibold">{user.email}</p>
-            <p className="text-xs text-gray-400 mt-1">{user.uniqueId}</p>
+        <aside className={`w-64 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r flex flex-col`}>
+          <div className={`p-6 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b`}>
+            <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>🎯 Freelancer Portal</h1>
+            <p className={`text-sm mt-1 font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{user.email}</p>
+            <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{user.uniqueId}</p>
           </div>
 
           <nav className="px-4 space-y-2 flex-1">
@@ -903,7 +903,9 @@ const FreelancerDashboard: React.FC = () => {
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                 activeTab === 'progression'
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                  : theme === 'dark' 
+                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
               }`}
             >
               <TrendingUp className="h-5 w-5" />
@@ -915,7 +917,9 @@ const FreelancerDashboard: React.FC = () => {
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                 activeTab === 'commissions'
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                  : theme === 'dark' 
+                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
               }`}
             >
               <DollarSign className="h-5 w-5" />
@@ -927,7 +931,9 @@ const FreelancerDashboard: React.FC = () => {
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                 activeTab === 'details'
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                  : theme === 'dark' 
+                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
               }`}
             >
               <FileText className="h-5 w-5" />
@@ -936,10 +942,14 @@ const FreelancerDashboard: React.FC = () => {
           </nav>
 
           {/* Bottom Actions */}
-          <div className="p-4 space-y-2 border-t border-gray-700 mt-auto">
+          <div className={`p-4 space-y-2 border-t mt-auto ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
             <button
               onClick={() => navigate('/')}
-              className="w-full flex items-center space-x-3 px-4 py-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded-lg transition-colors"
+              className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
+                theme === 'dark' 
+                  ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
             >
               <Home className="h-5 w-5" />
               <span>Back to Home</span>
@@ -947,7 +957,11 @@ const FreelancerDashboard: React.FC = () => {
 
             <button
               onClick={toggleTheme}
-              className="w-full flex items-center space-x-3 px-4 py-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded-lg transition-colors"
+              className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
+                theme === 'dark' 
+                  ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
@@ -964,7 +978,7 @@ const FreelancerDashboard: React.FC = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8 overflow-y-auto bg-gray-900">
+        <main className={`flex-1 p-8 overflow-y-auto ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
           {/* Notification Bell - Top Right */}
           <div className="flex justify-end mb-4">
             <NotificationBell />
