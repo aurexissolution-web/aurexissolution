@@ -293,9 +293,9 @@ const FreelancerDashboard: React.FC = () => {
 
   if (!user || user.role !== 'freelancer') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Access Denied</h1>
+          <h1 className={`text-2xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Access Denied</h1>
           <p className="text-gray-400 mb-6">You need freelancer privileges to access this page.</p>
         </div>
       </div>
@@ -313,41 +313,41 @@ const FreelancerDashboard: React.FC = () => {
 
       {/* Task Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+        <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Total Tasks</p>
-              <p className="text-3xl font-bold text-white mt-2">{tasks.length}</p>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Total Tasks</p>
+              <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tasks.length}</p>
             </div>
             <FileText className="h-10 w-10 text-blue-500" />
           </div>
         </div>
 
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+        <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
                 <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">In Progress</p>
-              <p className="text-3xl font-bold text-white mt-2">{tasks.filter(t => t.status === 'in-progress').length}</p>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>In Progress</p>
+              <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tasks.filter(t => t.status === 'in-progress').length}</p>
                     </div>
             <Activity className="h-10 w-10 text-yellow-500" />
                 </div>
               </div>
               
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+        <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Completed</p>
-              <p className="text-3xl font-bold text-white mt-2">{tasks.filter(t => t.status === 'completed').length}</p>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Completed</p>
+              <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tasks.filter(t => t.status === 'completed').length}</p>
                   </div>
             <CheckCircle className="h-10 w-10 text-green-500" />
                 </div>
               </div>
               
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+        <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Overdue</p>
-              <p className="text-3xl font-bold text-white mt-2">{tasks.filter(t => t.status === 'overdue').length}</p>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Overdue</p>
+              <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tasks.filter(t => t.status === 'overdue').length}</p>
                   </div>
             <AlertCircle className="h-10 w-10 text-red-500" />
                   </div>
@@ -355,8 +355,8 @@ const FreelancerDashboard: React.FC = () => {
               </div>
               
       {/* Tasks List */}
-      <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-white mb-4">Your Tasks</h3>
+      <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
+        <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Your Tasks</h3>
 
         {tasks.length === 0 ? (
           <div className="text-center py-12">
