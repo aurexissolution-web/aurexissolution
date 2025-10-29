@@ -27,9 +27,6 @@ import FinanceCommissions from '../components/admin/FinanceCommissions';
 import NotificationBell from '../components/admin/NotificationBell';
 
 const FinanceDashboard: React.FC = () => {
-  // VERSION CHECK - If you see this in console, you're running the LATEST code
-  console.log('🚀 FINANCE DASHBOARD LOADED - VERSION: 2024-10-29-FIX-FINANCE-NOTI');
-  
   const { user, paymentReceipts, paymentInvoices, invoices, projects, financialMetrics, attendanceRecords, logout , isLoggingOut } = useAppContext();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();

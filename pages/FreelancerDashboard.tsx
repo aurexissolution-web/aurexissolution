@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../hooks/useAppContext';
+import { useTheme } from '../hooks/useTheme';
 import { 
   TrendingUp, 
   DollarSign, 
@@ -17,7 +18,9 @@ import {
   Activity,
   Target,
   Paperclip,
-  Download
+  Download,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { db } from '../firebase/config';
 import { collection, query, where, getDocs, updateDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -58,6 +61,7 @@ interface Commission {
 
 const FreelancerDashboard: React.FC = () => {
   const { user, logout, tasks: contextTasks, commissions: contextCommissions } = useAppContext();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('progression');
 
@@ -939,6 +943,14 @@ const FreelancerDashboard: React.FC = () => {
             >
               <Home className="h-5 w-5" />
               <span>Back to Home</span>
+            </button>
+
+            <button
+              onClick={toggleTheme}
+              className="w-full flex items-center space-x-3 px-4 py-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded-lg transition-colors"
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
 
                   <button
