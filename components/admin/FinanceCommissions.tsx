@@ -30,11 +30,14 @@ const FinanceCommissions: React.FC = () => {
   console.log('  Total commissions in context:', commissions?.length || 0);
   console.log('  Total tasks in context:', tasks?.length || 0);
   console.log('  Commissions:', commissions);
+  console.log('  Tasks:', tasks);
   
   // Helper function to get task progress
   const getTaskProgress = (taskId: string): number => {
     const task = tasks.find(t => t.id === taskId);
-    return task?.progress || 100; // Default to 100 if task not found (already completed)
+    const progress = task?.progress || 100;
+    console.log(`📊 Task ${taskId} progress:`, progress, '| Found task:', !!task);
+    return progress; // Default to 100 if task not found (already completed)
   };
 
   // Filter commissions

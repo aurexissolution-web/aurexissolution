@@ -112,17 +112,26 @@ export const getUserNotifications = async (
   maxResults: number = 10
 ): Promise<Notification[]> => {
   try {
+    console.log('📥 Fetching notifications for:', userEmail);
+    
     // Fetch notifications without orderBy to avoid index requirement
     const q = query(
       collection(db, 'notifications'),
       where('recipientEmail', '==', userEmail)
     );
 
+    console.log('📥 Executing Firestore query...');
     const snapshot = await getDocs(q);
-    const notifications = snapshot.docs.map(doc => ({ 
-      id: doc.id, 
-      ...doc.data() 
-    } as Notification));
+    console.log('📥 Query returned', snapshot.docs.length, 'documents');
+    
+    const notifications = snapshot.docs.map(doc => { 
+      const data = doc.data();
+      console.log('📄 Notification doc:', doc.id, data);
+      return {
+        id: doc.id, 
+        ...data
+      } as Notification;
+    });
     
     // Sort in memory by createdAt (newest first)
     const sorted = notifications.sort((a, b) => {
@@ -131,10 +140,13 @@ export const getUserNotifications = async (
       return timeB - timeA;
     });
     
+    console.log('✅ Returning', sorted.length, 'notifications (limited to', maxResults, ')');
+    
     // Return limited results
     return sorted.slice(0, maxResults);
   } catch (error) {
     console.error('❌ Error fetching notifications:', error);
+    console.error('Error details:', error);
     return [];
   }
 };
