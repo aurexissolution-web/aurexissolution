@@ -112,15 +112,27 @@ export const getUserNotifications = async (
   maxResults: number = 10
 ): Promise<Notification[]> => {
   try {
+    // Fetch notifications without orderBy to avoid index requirement
     const q = query(
       collection(db, 'notifications'),
-      where('recipientEmail', '==', userEmail),
-      orderBy('createdAt', 'desc'),
-      limit(maxResults)
+      where('recipientEmail', '==', userEmail)
     );
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+    const notifications = snapshot.docs.map(doc => ({ 
+      id: doc.id, 
+      ...doc.data() 
+    } as Notification));
+    
+    // Sort in memory by createdAt (newest first)
+    const sorted = notifications.sort((a, b) => {
+      const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+      const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+      return timeB - timeA;
+    });
+    
+    // Return limited results
+    return sorted.slice(0, maxResults);
   } catch (error) {
     console.error('❌ Error fetching notifications:', error);
     return [];

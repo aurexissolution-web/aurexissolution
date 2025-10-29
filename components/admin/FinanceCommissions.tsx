@@ -17,7 +17,7 @@ import { doc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { notifyFreelancerPaymentReceived } from '../../services/notificationService';
 
 const FinanceCommissions: React.FC = () => {
-  const { commissions } = useAppContext();
+  const { commissions, tasks } = useAppContext();
   const { theme } = useTheme();
   const [selectedCommission, setSelectedCommission] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
@@ -28,7 +28,14 @@ const FinanceCommissions: React.FC = () => {
   // Debug: Log commissions received
   console.log('💼 FINANCE COMMISSIONS COMPONENT:');
   console.log('  Total commissions in context:', commissions?.length || 0);
+  console.log('  Total tasks in context:', tasks?.length || 0);
   console.log('  Commissions:', commissions);
+  
+  // Helper function to get task progress
+  const getTaskProgress = (taskId: string): number => {
+    const task = tasks.find(t => t.id === taskId);
+    return task?.progress || 100; // Default to 100 if task not found (already completed)
+  };
 
   // Filter commissions
   const pendingCommissions = commissions.filter(c => c.status === 'pending' || c.status === 'processing');
@@ -271,6 +278,11 @@ const FinanceCommissions: React.FC = () => {
                     }`}>
                       Task
                     </th>
+                    <th className={`px-4 py-3 text-center text-xs font-semibold uppercase ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Progress
+                    </th>
                     <th className={`px-4 py-3 text-right text-xs font-semibold uppercase ${
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                     }`}>
@@ -305,6 +317,21 @@ const FinanceCommissions: React.FC = () => {
                       </td>
                       <td className={`px-4 py-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                         {commission.taskTitle}
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div 
+                              className="bg-green-500 h-2 rounded-full transition-all"
+                              style={{ width: `${getTaskProgress(commission.taskId)}%` }}
+                            />
+                          </div>
+                          <span className={`text-sm font-medium ${
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            {getTaskProgress(commission.taskId)}%
+                          </span>
+                        </div>
                       </td>
                       <td className={`px-4 py-4 text-right font-bold text-green-500`}>
                         RM {commission.commissionAmount.toFixed(2)}
