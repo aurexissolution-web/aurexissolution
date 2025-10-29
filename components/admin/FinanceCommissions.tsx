@@ -24,20 +24,11 @@ const FinanceCommissions: React.FC = () => {
   const [paymentReceipt, setPaymentReceipt] = useState<{fileName: string, fileUrl: string, fileSize: number} | null>(null);
   const [financeNotes, setFinanceNotes] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-
-  // Debug: Log commissions received
-  console.log('💼 FINANCE COMMISSIONS COMPONENT:');
-  console.log('  Total commissions in context:', commissions?.length || 0);
-  console.log('  Total tasks in context:', tasks?.length || 0);
-  console.log('  Commissions:', commissions);
-  console.log('  Tasks:', tasks);
   
   // Helper function to get task progress
   const getTaskProgress = (taskId: string): number => {
     const task = tasks.find(t => t.id === taskId);
-    const progress = task?.progress || 100;
-    console.log(`📊 Task ${taskId} progress:`, progress, '| Found task:', !!task);
-    return progress; // Default to 100 if task not found (already completed)
+    return task?.progress || 100;
   };
 
   // Filter commissions
@@ -45,16 +36,9 @@ const FinanceCommissions: React.FC = () => {
   const paidCommissions = commissions.filter(c => c.status === 'paid');
   const rejectedCommissions = commissions.filter(c => c.status === 'rejected');
 
-  console.log('  Pending:', pendingCommissions.length);
-  console.log('  Paid:', paidCommissions.length);
-  console.log('  Rejected:', rejectedCommissions.length);
-
   // Calculate totals
   const totalPending = pendingCommissions.reduce((sum, c) => sum + c.commissionAmount, 0);
   const totalPaid = paidCommissions.reduce((sum, c) => sum + c.commissionAmount, 0);
-  
-  console.log('  Total Pending Amount: RM', totalPending.toFixed(2));
-  console.log('  Total Paid Amount: RM', totalPaid.toFixed(2));
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

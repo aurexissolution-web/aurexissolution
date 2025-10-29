@@ -40,14 +40,8 @@ const NotificationBell: React.FC = () => {
   }, []);
 
   const loadNotifications = async () => {
-    if (!user?.email) {
-      console.log('❌ NotificationBell: No user email');
-      return;
-    }
-    console.log('🔔 NotificationBell: Loading notifications for', user.email);
+    if (!user?.email) return;
     const newNotifications = await getUserNotifications(user.email, 20);
-    console.log('🔔 NotificationBell: Loaded', newNotifications.length, 'notifications');
-    console.log('🔔 Notifications:', newNotifications);
     setNotifications(newNotifications);
   };
 

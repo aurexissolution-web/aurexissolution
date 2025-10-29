@@ -112,26 +112,18 @@ export const getUserNotifications = async (
   maxResults: number = 10
 ): Promise<Notification[]> => {
   try {
-    console.log('📥 Fetching notifications for:', userEmail);
-    
     // Fetch notifications without orderBy to avoid index requirement
     const q = query(
       collection(db, 'notifications'),
       where('recipientEmail', '==', userEmail)
     );
 
-    console.log('📥 Executing Firestore query...');
     const snapshot = await getDocs(q);
-    console.log('📥 Query returned', snapshot.docs.length, 'documents');
     
-    const notifications = snapshot.docs.map(doc => { 
-      const data = doc.data();
-      console.log('📄 Notification doc:', doc.id, data);
-      return {
-        id: doc.id, 
-        ...data
-      } as Notification;
-    });
+    const notifications = snapshot.docs.map(doc => ({
+      id: doc.id, 
+      ...doc.data()
+    } as Notification));
     
     // Sort in memory by createdAt (newest first)
     const sorted = notifications.sort((a, b) => {
@@ -140,13 +132,9 @@ export const getUserNotifications = async (
       return timeB - timeA;
     });
     
-    console.log('✅ Returning', sorted.length, 'notifications (limited to', maxResults, ')');
-    
-    // Return limited results
     return sorted.slice(0, maxResults);
   } catch (error) {
-    console.error('❌ Error fetching notifications:', error);
-    console.error('Error details:', error);
+    console.error('Error fetching notifications:', error);
     return [];
   }
 };
@@ -198,31 +186,22 @@ export const notifyFinanceTaskCompleted = async (
   commissionAmount: number
 ): Promise<void> => {
   try {
-    console.log('🔔 NOTIFY FINANCE: Starting notification process...');
-    console.log('   Task:', taskTitle);
-    console.log('   Freelancer:', freelancerName, '(' + freelancerEmail + ')');
-    console.log('   Commission:', 'RM ' + commissionAmount.toFixed(2));
-    
     // Get all finance users - check ALL possible finance role variations
-    console.log('📋 Fetching finance users from database...');
     const financeQuery = query(
       collection(db, 'users'),
       where('role', 'in', ['finance', 'finance_executive', 'Finance Executive'])
     );
     
     const financeSnapshot = await getDocs(financeQuery);
-    console.log('📋 Found', financeSnapshot.docs.length, 'finance users');
     
     if (financeSnapshot.docs.length === 0) {
-      console.warn('⚠️  NO FINANCE USERS FOUND! Notification cannot be sent.');
-      console.warn('   Please create at least one user with role "finance" or "finance_executive"');
+      console.warn('No finance users found. Notification cannot be sent.');
       return;
     }
     
     // Send notification to each finance user
     for (const financeDoc of financeSnapshot.docs) {
       const financeUser = financeDoc.data();
-      console.log('   → Notifying finance user:', financeUser.email, '(role:', financeUser.role + ')');
       
       const notification: Omit<Notification, 'id'> = {
         recipientEmail: financeUser.email,
@@ -235,14 +214,10 @@ export const notifyFinanceTaskCompleted = async (
         createdAt: serverTimestamp()
       };
 
-      const notifRef = await addDoc(collection(db, 'notifications'), notification);
-      console.log('   ✅ Notification created! ID:', notifRef.id);
+      await addDoc(collection(db, 'notifications'), notification);
     }
-    
-    console.log('✅ Finance team notified of task completion -', financeSnapshot.docs.length, 'notifications sent');
   } catch (error) {
-    console.error('❌ Error notifying finance team:', error);
-    console.error('   Full error:', error);
+    console.error('Error notifying finance team:', error);
   }
 };
 

@@ -57,9 +57,6 @@ interface Commission {
 }
 
 const FreelancerDashboard: React.FC = () => {
-  // VERSION CHECK - If you see this in console, you're running the LATEST code
-  console.log('🚀 FREELANCER DASHBOARD LOADED - VERSION: 2024-10-29-FIX-FINANCE-NOTI');
-  
   const { user, logout, tasks: contextTasks, commissions: contextCommissions } = useAppContext();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('progression');
@@ -83,21 +80,9 @@ const FreelancerDashboard: React.FC = () => {
   useEffect(() => {
     if (!user) return;
 
-    console.log('📋 LOADING FREELANCER TASKS');
-    console.log('  Total tasks in context:', contextTasks.length);
-
     const freelancerTasks = (Array.isArray(contextTasks) ? contextTasks : []).filter(
       task => task.assignedTo === user.email || task.assignedTo === user.uniqueId || task.employeeId === user.id
     );
-
-    console.log('  Tasks for this freelancer:', freelancerTasks.length);
-    freelancerTasks.forEach(t => {
-      console.log(`  - Task: ${t.title}`);
-      console.log(`    Status: ${t.status}`);
-      console.log(`    Budget: ${(t as any).budget || 'NOT SET'}`);
-      console.log(`    Commission Rate: ${(t as any).commissionRate || 'NOT SET'}%`);
-      console.log(`    Commission Amount: RM ${(t as any).commissionAmount || 'NOT SET'}`);
-    });
 
     setTasks(freelancerTasks.map(t => ({
       ...t,
@@ -115,10 +100,6 @@ const FreelancerDashboard: React.FC = () => {
 
     setIsUpdating(true);
     try {
-      console.log('🚀 PROGRESS UPDATE STARTED');
-      console.log('Progress:', progressUpdate);
-      console.log('Task:', selectedTask.title);
-      
       const newStatus = progressUpdate >= 100 ? 'completed' : progressUpdate > 0 ? 'in-progress' : 'pending';
       
       // Update task in Firebase
@@ -130,18 +111,12 @@ const FreelancerDashboard: React.FC = () => {
         status: newStatus,
         submittedAt: progressUpdate >= 100 ? serverTimestamp() : null
       });
-      console.log('✅ Task updated to status:', newStatus);
 
       // If task is completed (100%), create commission and notify finance
       if (progressUpdate >= 100) {
         const commissionAmount = (selectedTask as any).commissionAmount || 0;
         const commissionRate = (selectedTask as any).commissionRate || 0;
         const taskBudget = (selectedTask as any).budget || 0;
-        
-        console.log('💰 TASK COMPLETED - CREATING COMMISSION:');
-        console.log('  Commission Amount:', commissionAmount);
-        console.log('  Commission Rate:', commissionRate);
-        console.log('  Task Budget:', taskBudget);
         
         if (commissionAmount > 0) {
           const commissionData = {
@@ -159,10 +134,7 @@ const FreelancerDashboard: React.FC = () => {
             updatedAt: serverTimestamp()
           };
           
-          console.log('📝 Creating commission record:', commissionData);
-          const commissionRef = await addDoc(collection(db, 'commissions'), commissionData);
-          console.log('✅ Commission record created! ID:', commissionRef.id);
-          console.log('💰 Finance department should now see RM', commissionAmount.toFixed(2), 'pending');
+          await addDoc(collection(db, 'commissions'), commissionData);
           
           // Notify finance team
           await notifyFinanceTaskCompleted(
@@ -172,11 +144,9 @@ const FreelancerDashboard: React.FC = () => {
             user.name || user.email,
             commissionAmount
           );
-          console.log('✅ Finance team notified!');
           
           alert('✅ Task completed! Commission created and Finance team has been notified. They will process your payment soon.');
         } else {
-          console.warn('⚠️ NO COMMISSION CREATED - Commission amount is 0 or undefined!');
           alert('✅ Task marked as completed!');
         }
       } else {
@@ -238,31 +208,20 @@ const FreelancerDashboard: React.FC = () => {
 
     setIsUpdating(true);
     try {
-      console.log('🚀 TASK SUBMISSION STARTED');
-      console.log('Task ID:', selectedTask.id);
-      console.log('Task Title:', selectedTask.title);
-      console.log('Selected Task Data:', selectedTask);
-      
       const taskRef = doc(db, 'tasks', selectedTask.id);
       await updateDoc(taskRef, {
-        freelancerSubmissions: uploadedFiles, // Save freelancer submissions
+        freelancerSubmissions: uploadedFiles,
         submissionNotes: progressNotes,
         status: 'completed',
         progress: 100,
         submittedAt: serverTimestamp(),
         lastUpdated: serverTimestamp()
       });
-      console.log('✅ Task updated to completed status');
 
       // Create commission record for finance to process
       const commissionAmount = (selectedTask as any).commissionAmount || 0;
       const commissionRate = (selectedTask as any).commissionRate || 0;
       const taskBudget = (selectedTask as any).budget || 0;
-      
-      console.log('💰 COMMISSION CHECK:');
-      console.log('  Commission Amount:', commissionAmount);
-      console.log('  Commission Rate:', commissionRate);
-      console.log('  Task Budget:', taskBudget);
       
       if (commissionAmount > 0) {
         const commissionData = {
@@ -280,10 +239,7 @@ const FreelancerDashboard: React.FC = () => {
           updatedAt: serverTimestamp()
         };
         
-        console.log('📝 Creating commission record:', commissionData);
-        const commissionRef = await addDoc(collection(db, 'commissions'), commissionData);
-        console.log('✅ Commission record created! ID:', commissionRef.id);
-        console.log('💰 Finance department should now see RM', commissionAmount.toFixed(2), 'pending');
+        await addDoc(collection(db, 'commissions'), commissionData);
         
         // Notify finance team
         await notifyFinanceTaskCompleted(
@@ -293,11 +249,6 @@ const FreelancerDashboard: React.FC = () => {
           user.name || user.email,
           commissionAmount
         );
-        console.log('✅ Finance team notified!');
-      } else {
-        console.warn('⚠️ NO COMMISSION CREATED - Commission amount is 0 or undefined!');
-        console.warn('   This task does not have commission details set.');
-        console.warn('   Make sure admin set budget & commission rate when creating the task.');
       }
 
       alert('✅ Task submitted successfully! Admin can now download your files. Finance has been notified and will process your commission payment.');
