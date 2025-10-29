@@ -203,11 +203,11 @@ export const notifyFinanceTaskCompleted = async (
     console.log('   Freelancer:', freelancerName, '(' + freelancerEmail + ')');
     console.log('   Commission:', 'RM ' + commissionAmount.toFixed(2));
     
-    // Get all finance users - check BOTH 'finance' and 'finance_executive' roles
+    // Get all finance users - check ALL possible finance role variations
     console.log('📋 Fetching finance users from database...');
     const financeQuery = query(
       collection(db, 'users'),
-      where('role', 'in', ['finance', 'finance_executive'])
+      where('role', 'in', ['finance', 'finance_executive', 'Finance Executive'])
     );
     
     const financeSnapshot = await getDocs(financeQuery);
