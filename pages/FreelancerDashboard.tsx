@@ -112,28 +112,86 @@ const FreelancerDashboard: React.FC = () => {
 
     setIsUpdating(true);
     try {
+      console.log('🚀 PROGRESS UPDATE STARTED');
+      console.log('Progress:', progressUpdate);
+      console.log('Task:', selectedTask.title);
+      
+      const newStatus = progressUpdate >= 100 ? 'completed' : progressUpdate > 0 ? 'in-progress' : 'pending';
+      
       // Update task in Firebase
       const taskRef = doc(db, 'tasks', selectedTask.id);
       await updateDoc(taskRef, {
         progress: progressUpdate,
         progressNotes: progressNotes,
         lastUpdated: serverTimestamp(),
-        status: progressUpdate >= 100 ? 'completed' : progressUpdate > 0 ? 'in-progress' : 'pending'
+        status: newStatus,
+        submittedAt: progressUpdate >= 100 ? serverTimestamp() : null
       });
+      console.log('✅ Task updated to status:', newStatus);
+
+      // If task is completed (100%), create commission and notify finance
+      if (progressUpdate >= 100) {
+        const commissionAmount = (selectedTask as any).commissionAmount || 0;
+        const commissionRate = (selectedTask as any).commissionRate || 0;
+        const taskBudget = (selectedTask as any).budget || 0;
+        
+        console.log('💰 TASK COMPLETED - CREATING COMMISSION:');
+        console.log('  Commission Amount:', commissionAmount);
+        console.log('  Commission Rate:', commissionRate);
+        console.log('  Task Budget:', taskBudget);
+        
+        if (commissionAmount > 0) {
+          const commissionData = {
+            taskId: selectedTask.id,
+            taskTitle: selectedTask.title,
+            freelancerEmail: user.email,
+            freelancerId: user.id,
+            freelancerName: user.name || user.email,
+            commissionAmount: commissionAmount,
+            commissionRate: commissionRate,
+            taskBudget: taskBudget,
+            status: 'pending',
+            completedDate: serverTimestamp(),
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          };
+          
+          console.log('📝 Creating commission record:', commissionData);
+          const commissionRef = await addDoc(collection(db, 'commissions'), commissionData);
+          console.log('✅ Commission record created! ID:', commissionRef.id);
+          console.log('💰 Finance department should now see RM', commissionAmount.toFixed(2), 'pending');
+          
+          // Notify finance team
+          await notifyFinanceTaskCompleted(
+            selectedTask.id,
+            selectedTask.title,
+            user.email,
+            user.name || user.email,
+            commissionAmount
+          );
+          console.log('✅ Finance team notified!');
+          
+          alert('✅ Task completed! Commission created and Finance team has been notified. They will process your payment soon.');
+        } else {
+          console.warn('⚠️ NO COMMISSION CREATED - Commission amount is 0 or undefined!');
+          alert('✅ Task marked as completed!');
+        }
+      } else {
+        alert('✅ Progress updated successfully!');
+      }
 
       // Update local state
       setTasks(tasks.map(t => 
         t.id === selectedTask.id 
-          ? { ...t, progress: progressUpdate, submissionNotes: progressNotes, status: progressUpdate >= 100 ? 'completed' : progressUpdate > 0 ? 'in-progress' : 'pending' }
+          ? { ...t, progress: progressUpdate, submissionNotes: progressNotes, status: newStatus }
           : t
       ));
 
-      alert('✅ Progress updated successfully!');
       setSelectedTask(null);
       setProgressUpdate(0);
       setProgressNotes('');
     } catch (error) {
-      console.error('Error updating progress:', error);
+      console.error('❌ Error updating progress:', error);
       alert('❌ Failed to update progress. Please try again.');
     } finally {
       setIsUpdating(false);
@@ -604,18 +662,19 @@ const FreelancerDashboard: React.FC = () => {
                         )}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            {(commission as any).paymentReceipt ? (
+                            {(commission as any).paymentReceipt?.fileUrl ? (
                               <a
-                                href={(commission as any).paymentReceipt}
+                                href={(commission as any).paymentReceipt.fileUrl}
+                                download={(commission as any).paymentReceipt.fileName || 'receipt.pdf'}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition-colors"
                               >
                                 <Download className="h-4 w-4" />
-                                Download
+                                Download Receipt
                               </a>
                             ) : commission.status === 'paid' ? (
-                              <span className="text-gray-500 text-xs">Processing...</span>
+                              <span className="text-gray-500 text-xs">Receipt uploading...</span>
                             ) : (
                               <span className="text-gray-600 text-xs">-</span>
                             )}
