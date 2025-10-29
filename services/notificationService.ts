@@ -198,17 +198,31 @@ export const notifyFinanceTaskCompleted = async (
   commissionAmount: number
 ): Promise<void> => {
   try {
-    // Get all finance users
+    console.log('🔔 NOTIFY FINANCE: Starting notification process...');
+    console.log('   Task:', taskTitle);
+    console.log('   Freelancer:', freelancerName, '(' + freelancerEmail + ')');
+    console.log('   Commission:', 'RM ' + commissionAmount.toFixed(2));
+    
+    // Get all finance users - check BOTH 'finance' and 'finance_executive' roles
+    console.log('📋 Fetching finance users from database...');
     const financeQuery = query(
       collection(db, 'users'),
-      where('role', '==', 'finance')
+      where('role', 'in', ['finance', 'finance_executive'])
     );
     
     const financeSnapshot = await getDocs(financeQuery);
+    console.log('📋 Found', financeSnapshot.docs.length, 'finance users');
+    
+    if (financeSnapshot.docs.length === 0) {
+      console.warn('⚠️  NO FINANCE USERS FOUND! Notification cannot be sent.');
+      console.warn('   Please create at least one user with role "finance" or "finance_executive"');
+      return;
+    }
     
     // Send notification to each finance user
     for (const financeDoc of financeSnapshot.docs) {
       const financeUser = financeDoc.data();
+      console.log('   → Notifying finance user:', financeUser.email, '(role:', financeUser.role + ')');
       
       const notification: Omit<Notification, 'id'> = {
         recipientEmail: financeUser.email,
@@ -221,12 +235,14 @@ export const notifyFinanceTaskCompleted = async (
         createdAt: serverTimestamp()
       };
 
-      await addDoc(collection(db, 'notifications'), notification);
+      const notifRef = await addDoc(collection(db, 'notifications'), notification);
+      console.log('   ✅ Notification created! ID:', notifRef.id);
     }
     
-    console.log('✅ Finance team notified of task completion');
+    console.log('✅ Finance team notified of task completion -', financeSnapshot.docs.length, 'notifications sent');
   } catch (error) {
     console.error('❌ Error notifying finance team:', error);
+    console.error('   Full error:', error);
   }
 };
 
