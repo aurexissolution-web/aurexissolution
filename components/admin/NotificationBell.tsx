@@ -1,9 +1,10 @@
 // components/admin/NotificationBell.tsx
 import React, { useState, useEffect } from 'react';
-import { Bell, X, Clock, AlertCircle } from 'lucide-react';
+import { Bell, X, Clock, AlertCircle, DollarSign, CheckCircle } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
+import { useAppContext } from '../../hooks/useAppContext';
 import { 
-  generateTaskNotifications, 
+  getUserNotifications,
   getNotificationCount,
   formatNotificationTime,
   requestNotificationPermission,
@@ -12,19 +13,22 @@ import {
 
 const NotificationBell: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAppContext();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
 
   // Load notifications
   useEffect(() => {
-    loadNotifications();
-    
-    // Refresh notifications every 5 minutes
-    const interval = setInterval(loadNotifications, 5 * 60 * 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
+    if (user?.email) {
+      loadNotifications();
+      
+      // Refresh notifications every 30 seconds for real-time updates
+      const interval = setInterval(loadNotifications, 30 * 1000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [user?.email]);
 
   // Request notification permission on mount
   useEffect(() => {
@@ -36,7 +40,8 @@ const NotificationBell: React.FC = () => {
   }, []);
 
   const loadNotifications = async () => {
-    const newNotifications = await generateTaskNotifications();
+    if (!user?.email) return;
+    const newNotifications = await getUserNotifications(user.email, 20);
     setNotifications(newNotifications);
   };
 
@@ -64,6 +69,17 @@ const NotificationBell: React.FC = () => {
         return <AlertCircle className="h-5 w-5 text-red-500" />;
       case 'task_deadline_soon':
         return <Clock className="h-5 w-5 text-yellow-500" />;
+      case 'task_completed':
+        return <DollarSign className="h-5 w-5 text-green-500" />;
+      case 'payment_receipt_uploaded':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'project_request_approved':
+      case 'project_assigned':
+        return <CheckCircle className="h-5 w-5 text-blue-500" />;
+      case 'project_request_rejected':
+        return <AlertCircle className="h-5 w-5 text-red-500" />;
+      case 'project_request_need_info':
+        return <AlertCircle className="h-5 w-5 text-orange-500" />;
       default:
         return <Bell className="h-5 w-5 text-blue-500" />;
     }
