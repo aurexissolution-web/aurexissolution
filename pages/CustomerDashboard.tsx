@@ -801,8 +801,10 @@ const CustomerDashboard: React.FC = () => {
   };
 
   return (
-    <div className={`${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      <div className="flex h-screen">
+    <div className={`min-h-screen ${
+      theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
+    }`}>
+      <div className="flex">
         {/* Sidebar */}
         <aside className={`w-64 min-h-screen border-r ${
           theme === 'dark'
