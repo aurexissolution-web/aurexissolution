@@ -804,7 +804,7 @@ const CustomerDashboard: React.FC = () => {
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="flex min-h-screen w-full">
         {/* Sidebar */}
-        <aside className={`w-64 min-h-screen border-r ${
+        <aside className={`w-64 min-h-screen border-r relative ${
           theme === 'dark'
             ? 'bg-gray-800 border-gray-700'
             : 'bg-white border-gray-200'
@@ -890,7 +890,7 @@ const CustomerDashboard: React.FC = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-8 min-h-full">
           {renderContent()}
         </main>
       </div>
