@@ -99,6 +99,7 @@ function App() {
     <AppProvider>
       <ThemeProvider>
         <div className="min-h-screen w-full bg-[#f9fafb] dark:bg-[#131022]">
+          <div className="fixed inset-0 -z-10 bg-[#f9fafb] dark:bg-[#131022]" />
           <AppContent />
         </div>
       </ThemeProvider>
