@@ -277,8 +277,10 @@ const HRDashboard: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      <div className="flex min-h-screen w-full">
+    <div className={`min-h-screen ${
+      theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
+    }`}>
+      <div className="flex">
         {/* Sidebar */}
         <aside className={`w-64 min-h-screen border-r ${
           theme === 'dark'

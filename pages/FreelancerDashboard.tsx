@@ -888,8 +888,8 @@ const FreelancerDashboard: React.FC = () => {
   };
                       
                       return (
-    <div className={`min-h-screen bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200`}>
-      <div className="flex min-h-screen w-full">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="flex h-screen">
         {/* Sidebar */}
         <aside className={`w-64 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r flex flex-col`}>
           <div className={`p-6 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b`}>
