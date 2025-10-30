@@ -698,9 +698,9 @@ const FreelancerDashboard: React.FC = () => {
                     <p className="text-gray-400 text-sm mt-1">{task.description}</p>
                   </div>
                   <span className={`px-2 py-1 text-xs font-semibold rounded-full
-  ${task.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-[#00F5D4]/20 dark:text-[#00F5D4]' :
-    task.status === 'in-progress' ? 'bg-blue-100 text-blue-800 dark:bg-[#4299E1]/20 dark:text-[#4299E1]' :
-    task.status === 'overdue' ? 'bg-red-100 text-red-800 dark:bg-[#F56565]/20 dark:text-[#F56565]' :
+  ${task.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-kpi-green/20 dark:text-kpi-green' :
+    task.status === 'in-progress' ? 'bg-blue-100 text-blue-800 dark:bg-kpi-blue/20 dark:text-kpi-blue' :
+    task.status === 'overdue' ? 'bg-red-100 text-red-800 dark:bg-kpi-red/20 dark:text-kpi-red' :
     'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200'}
 `}>
                           {task.status}
@@ -892,7 +892,7 @@ const FreelancerDashboard: React.FC = () => {
     <div className="min-h-screen bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
       <div className="flex h-screen">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-white dark:bg-[#0A192F] p-4 flex flex-col justify-between border-r border-gray-200 dark:border-[#1A202C]">
+        <aside className="w-64 flex-shrink-0 bg-white dark:bg-sidebar-dark p-4 flex flex-col justify-between border-r border-gray-200 dark:border-[#1A202C]">
           <div className={`p-6 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b`}>
             <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>🎯 Freelancer Portal</h1>
             <p className={`text-sm mt-1 font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{user.email}</p>
@@ -980,7 +980,7 @@ const FreelancerDashboard: React.FC = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8 bg-background-light dark:bg-gradient-to-br from-[#0A192F] to-[#191430] overflow-y-auto">
+        <main className={`flex-1 p-8 overflow-y-auto ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
           {/* Notification Bell - Top Right */}
           <div className="flex justify-end mb-4">
             <NotificationBell />
