@@ -294,9 +294,9 @@ const FreelancerDashboard: React.FC = () => {
 
   if (!user || user.role !== 'freelancer') {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="min-h-screen bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
         <div className="text-center">
-          <h1 className={`text-2xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Access Denied</h1>
+          <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Access Denied</h1>
           <p className="text-gray-400 mb-6">You need freelancer privileges to access this page.</p>
         </div>
       </div>
@@ -314,53 +314,41 @@ const FreelancerDashboard: React.FC = () => {
 
       {/* Task Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className={`${theme === 'dark' 
-  ? 'bg-gray-900/70 border-gray-800 shadow-xl' 
-  : 'bg-white border-gray-100 shadow-[0_4px_32px_0_rgba(80,80,180,0.08)]'} 
-border rounded-2xl p-6 transition-all`}>
+        <div className="bg-white dark:bg-card-dark/80 p-6 rounded-xl shadow-md dark:shadow-none border border-gray-200 dark:border-blue-dark/50">
           <div className="flex items-center justify-between">
             <div>
-              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Total Tasks</p>
-              <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tasks.length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Tasks</p>
+              <p className="text-3xl font-bold mt-2 text-gray-900 dark:text-white">{tasks.length}</p>
             </div>
             <FileText className="h-10 w-10 text-blue-500" />
           </div>
         </div>
 
-        <div className={`${theme === 'dark' 
-  ? 'bg-gray-900/70 border-gray-800 shadow-xl' 
-  : 'bg-white border-gray-100 shadow-[0_4px_32px_0_rgba(80,80,180,0.08)]'} 
-border rounded-2xl p-6 transition-all`}>
+        <div className="bg-white dark:bg-card-dark/80 p-6 rounded-xl shadow-md dark:shadow-none border border-gray-200 dark:border-blue-dark/50">
                 <div className="flex items-center justify-between">
             <div>
-              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>In Progress</p>
-              <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tasks.filter(t => t.status === 'in-progress').length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">In Progress</p>
+              <p className="text-3xl font-bold mt-2 text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'in-progress').length}</p>
                     </div>
             <Activity className="h-10 w-10 text-yellow-500" />
                 </div>
               </div>
               
-        <div className={`${theme === 'dark' 
-  ? 'bg-gray-900/70 border-gray-800 shadow-xl' 
-  : 'bg-white border-gray-100 shadow-[0_4px_32px_0_rgba(80,80,180,0.08)]'} 
-border rounded-2xl p-6 transition-all`}>
+        <div className="bg-white dark:bg-card-dark/80 p-6 rounded-xl shadow-md dark:shadow-none border border-gray-200 dark:border-blue-dark/50">
           <div className="flex items-center justify-between">
             <div>
-              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Completed</p>
-              <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tasks.filter(t => t.status === 'completed').length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Completed</p>
+              <p className="text-3xl font-bold mt-2 text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'completed').length}</p>
                   </div>
             <CheckCircle className="h-10 w-10 text-green-500" />
                 </div>
               </div>
               
-        <div className={`${theme === 'dark' 
-  ? 'bg-gray-900/70 border-gray-800 shadow-xl' 
-  : 'bg-white border-gray-100 shadow-[0_4px_32px_0_rgba(80,80,180,0.08)]'} 
-border rounded-2xl p-6 transition-all`}>
+        <div className="bg-white dark:bg-card-dark/80 p-6 rounded-xl shadow-md dark:shadow-none border border-gray-200 dark:border-blue-dark/50">
           <div className="flex items-center justify-between">
             <div>
-              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Overdue</p>
-              <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tasks.filter(t => t.status === 'overdue').length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Overdue</p>
+              <p className="text-3xl font-bold mt-2 text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'overdue').length}</p>
                   </div>
             <AlertCircle className="h-10 w-10 text-red-500" />
                   </div>
@@ -368,11 +356,8 @@ border rounded-2xl p-6 transition-all`}>
               </div>
               
       {/* Tasks List */}
-      <div className={`${theme === 'dark' 
-  ? 'bg-gray-900/70 border-gray-800 shadow-xl' 
-  : 'bg-white border-gray-100 shadow-[0_4px_32px_0_rgba(80,80,180,0.08)]'} 
-border rounded-2xl p-6 transition-all`}>
-        <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Your Tasks</h3>
+      <div className="bg-white dark:bg-card-dark/80 p-6 rounded-xl shadow-md dark:shadow-none border border-gray-200 dark:border-blue-dark/50">
+        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Your Tasks</h3>
 
         {tasks.length === 0 ? (
           <div className="text-center py-12">
@@ -712,12 +697,12 @@ border rounded-2xl p-6 transition-all`}>
                     <h4 className="text-white font-semibold">{task.title}</h4>
                     <p className="text-gray-400 text-sm mt-1">{task.description}</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ml-4 
-  ${task.status === 'completed' ? (theme === 'dark' ? 'bg-green-600/30 text-green-300 border border-green-400' : 'bg-green-100 text-green-700 border border-green-400') :
-    task.status === 'in-progress' ? (theme === 'dark' ? 'bg-blue-600/30 text-blue-200 border border-blue-400' : 'bg-blue-100 text-blue-700 border border-blue-400') :
-    task.status === 'overdue' ? (theme === 'dark' ? 'bg-red-600/30 text-red-200 border border-red-400' : 'bg-red-100 text-red-700 border border-red-400') :
-    theme === 'dark' ? 'bg-gray-800/80 text-gray-300 border border-gray-600' : 'bg-gray-100 text-gray-600 border border-gray-300'
-  }`}>
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full
+  ${task.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-success-dark/20 dark:text-success-dark' :
+    task.status === 'in-progress' ? 'bg-blue-100 text-blue-800 dark:bg-blue-dark/20 dark:text-blue-dark' :
+    task.status === 'overdue' ? 'bg-red-100 text-red-800 dark:bg-purple-dark/20 dark:text-purple-dark' :
+    'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'}
+`}>
                           {task.status}
                         </span>
                       </div>
@@ -904,10 +889,10 @@ border rounded-2xl p-6 transition-all`}>
   };
                       
                       return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className="min-h-screen bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
       <div className="flex h-screen">
         {/* Sidebar */}
-        <aside className={`w-64 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r flex flex-col`}>
+        <aside className="w-64 flex-shrink-0 bg-white dark:bg-sidebar-dark p-4 flex flex-col justify-between border-r border-gray-200 dark:border-border-dark">
           <div className={`p-6 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b`}>
             <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>🎯 Freelancer Portal</h1>
             <p className={`text-sm mt-1 font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{user.email}</p>
