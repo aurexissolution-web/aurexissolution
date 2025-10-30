@@ -12,28 +12,17 @@ export default {
     "./firebase/**/*.{js,ts,jsx,tsx}",
     "./netlify/**/*.{js,ts,jsx,tsx}"
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        primary: '#4725f4',
-        'background-light': '#FDFBF6',
-        'background-dark': '#131022',
-        'sidebar-dark': '#0A192F',
-        'card-dark': '#1A202C',
-        'border-dark': '#1A202C',
-        'success-dark': '#00F5D4',
-        'purple-dark': '#FF00A8',
-        'blue-dark': '#4299E1',
-      },
-      fontFamily: {
-        display: ['Inter', 'sans-serif'],
-      },
-      borderRadius: {
-        DEFAULT: '0.25rem',
-        lg: '0.5rem',
-        xl: '0.75rem',
-        full: '9999px',
+        primary: 'var(--primary)',
+        secondary: 'var(--secondary)',
+        background: 'var(--background)',
+        surface: 'var(--surface)',
+        'text-primary': 'var(--text-primary)',
+        'text-secondary': 'var(--text-secondary)',
+        neutral: 'var(--neutral)',
+        'neutral-light': 'var(--neutral-light)',
       },
       animation: {
         'fade-in-down': 'fadeInDown 0.6s ease-out',
