@@ -314,10 +314,7 @@ const FreelancerDashboard: React.FC = () => {
 
       {/* Task Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className={`${theme === 'dark' 
-  ? 'bg-gray-900/70 border-gray-800 shadow-xl' 
-  : 'bg-white border-gray-100 shadow-[0_4px_32px_0_rgba(80,80,180,0.08)]'} 
-border rounded-2xl p-6 transition-all`}>
+        <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
           <div className="flex items-center justify-between">
             <div>
               <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Total Tasks</p>
@@ -327,10 +324,7 @@ border rounded-2xl p-6 transition-all`}>
           </div>
         </div>
 
-        <div className={`${theme === 'dark' 
-  ? 'bg-gray-900/70 border-gray-800 shadow-xl' 
-  : 'bg-white border-gray-100 shadow-[0_4px_32px_0_rgba(80,80,180,0.08)]'} 
-border rounded-2xl p-6 transition-all`}>
+        <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
                 <div className="flex items-center justify-between">
             <div>
               <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>In Progress</p>
@@ -340,10 +334,7 @@ border rounded-2xl p-6 transition-all`}>
                 </div>
               </div>
               
-        <div className={`${theme === 'dark' 
-  ? 'bg-gray-900/70 border-gray-800 shadow-xl' 
-  : 'bg-white border-gray-100 shadow-[0_4px_32px_0_rgba(80,80,180,0.08)]'} 
-border rounded-2xl p-6 transition-all`}>
+        <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
           <div className="flex items-center justify-between">
             <div>
               <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Completed</p>
@@ -353,10 +344,7 @@ border rounded-2xl p-6 transition-all`}>
                 </div>
               </div>
               
-        <div className={`${theme === 'dark' 
-  ? 'bg-gray-900/70 border-gray-800 shadow-xl' 
-  : 'bg-white border-gray-100 shadow-[0_4px_32px_0_rgba(80,80,180,0.08)]'} 
-border rounded-2xl p-6 transition-all`}>
+        <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
           <div className="flex items-center justify-between">
             <div>
               <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Overdue</p>
@@ -368,10 +356,7 @@ border rounded-2xl p-6 transition-all`}>
               </div>
               
       {/* Tasks List */}
-      <div className={`${theme === 'dark' 
-  ? 'bg-gray-900/70 border-gray-800 shadow-xl' 
-  : 'bg-white border-gray-100 shadow-[0_4px_32px_0_rgba(80,80,180,0.08)]'} 
-border rounded-2xl p-6 transition-all`}>
+      <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
         <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Your Tasks</h3>
 
         {tasks.length === 0 ? (
@@ -389,12 +374,12 @@ border rounded-2xl p-6 transition-all`}>
                     <h4 className="text-lg font-semibold text-white">{task.title}</h4>
                     <p className="text-gray-400 text-sm mt-1">{task.description}</p>
                               </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ml-4 
-  ${task.status === 'completed' ? (theme === 'dark' ? 'bg-green-600/30 text-green-300 border border-green-400' : 'bg-green-100 text-green-700 border border-green-400') :
-    task.status === 'in-progress' ? (theme === 'dark' ? 'bg-blue-600/30 text-blue-200 border border-blue-400' : 'bg-blue-100 text-blue-700 border border-blue-400') :
-    task.status === 'overdue' ? (theme === 'dark' ? 'bg-red-600/30 text-red-200 border border-red-400' : 'bg-red-100 text-red-700 border border-red-400') :
-    theme === 'dark' ? 'bg-gray-800/80 text-gray-300 border border-gray-600' : 'bg-gray-100 text-gray-600 border border-gray-300'
-  }`}>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ml-4 ${
+                    task.status === 'completed' ? 'bg-green-900/30 text-green-300' :
+                    task.status === 'in-progress' ? 'bg-blue-900/30 text-blue-300' :
+                    task.status === 'overdue' ? 'bg-red-900/30 text-red-300' :
+                    'bg-gray-900/30 text-gray-300'
+                  }`}>
                     {task.status}
                                   </span>
                           </div>
@@ -712,12 +697,11 @@ border rounded-2xl p-6 transition-all`}>
                     <h4 className="text-white font-semibold">{task.title}</h4>
                     <p className="text-gray-400 text-sm mt-1">{task.description}</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ml-4 
-  ${task.status === 'completed' ? (theme === 'dark' ? 'bg-green-600/30 text-green-300 border border-green-400' : 'bg-green-100 text-green-700 border border-green-400') :
-    task.status === 'in-progress' ? (theme === 'dark' ? 'bg-blue-600/30 text-blue-200 border border-blue-400' : 'bg-blue-100 text-blue-700 border border-blue-400') :
-    task.status === 'overdue' ? (theme === 'dark' ? 'bg-red-600/30 text-red-200 border border-red-400' : 'bg-red-100 text-red-700 border border-red-400') :
-    theme === 'dark' ? 'bg-gray-800/80 text-gray-300 border border-gray-600' : 'bg-gray-100 text-gray-600 border border-gray-300'
-  }`}>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ml-4 ${
+                    task.status === 'completed' ? 'bg-green-900/30 text-green-300' :
+                    task.status === 'in-progress' ? 'bg-blue-900/30 text-blue-300' :
+                    'bg-gray-900/30 text-gray-300'
+                        }`}>
                           {task.status}
                         </span>
                       </div>
