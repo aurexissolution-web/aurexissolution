@@ -114,7 +114,7 @@ const FinanceDashboard: React.FC = () => {
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      <div className="flex h-screen">
+      <div className="flex min-h-screen w-full">
         {/* Sidebar */}
         <aside className={`w-64 border-r flex flex-col ${
           theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
