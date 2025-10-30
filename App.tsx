@@ -98,9 +98,7 @@ function App() {
   return (
     <AppProvider>
       <ThemeProvider>
-        <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900">
-          <AppContent />
-        </div>
+        <AppContent />
       </ThemeProvider>
     </AppProvider>
   );
