@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { LogOut, Home, Sun, Moon } from 'lucide-react';
+import { LogOut, Home, Sun, Moon, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../../hooks/useAppContext';
 import { useTheme } from '../../hooks/useTheme';
@@ -27,6 +27,7 @@ const AdminDashboard: React.FC = () => {
   const { logout } = useAppContext();
   const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('project-management');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -69,11 +70,14 @@ const AdminDashboard: React.FC = () => {
 
   const TabButton: React.FC<{ tabName: Tab; label: string }> = ({ tabName, label }) => (
     <button
-      onClick={() => setActiveTab(tabName)}
-      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 w-full text-left ${
+      onClick={() => {
+        setActiveTab(tabName);
+        setIsSidebarOpen(false); // Close sidebar on mobile after selection
+      }}
+      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 w-full text-left touch-target ${
         activeTab === tabName
           ? 'bg-primary text-white'
-          : 'text-neutral-light hover:bg-gray-200'
+          : 'text-neutral-light hover:bg-gray-200 dark:hover:bg-gray-700'
       }`}
     >
       {label}
@@ -81,9 +85,44 @@ const AdminDashboard: React.FC = () => {
   );
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className={`w-64 p-4 flex flex-col ${theme === 'dark' ? 'bg-neutral text-white' : 'bg-gray-800 text-white'}`}>
-        <div className="flex items-center justify-between mb-8">
+    <div className="flex min-h-screen bg-background relative">
+      {/* Mobile Header with Hamburger */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-surface shadow-md border-b border-neutral">
+        <div className="flex items-center justify-between p-4">
+          <h1 className="text-xl font-bold text-text-primary">Aurexis Admin</h1>
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="p-2 rounded-md hover:bg-neutral/50 transition-colors touch-target"
+            aria-label="Toggle menu"
+          >
+            {isSidebarOpen ? <X size={24} className="text-text-primary" /> : <Menu size={24} className="text-text-primary" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Overlay for mobile when sidebar is open */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Responsive */}
+      <aside className={`
+        ${theme === 'dark' ? 'bg-neutral text-white' : 'bg-gray-800 text-white'}
+        w-64 p-4 flex flex-col
+        fixed lg:relative
+        top-0 bottom-0 left-0
+        z-40
+        transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        lg:pt-4
+        pt-20
+        overflow-y-auto
+        safe-area-top
+      `}>
+        <div className="flex items-center justify-between mb-8 hidden lg:flex">
           <h1 className="text-2xl font-bold">Aurexis Admin</h1>
           <div className={`px-2 py-1 rounded text-xs font-medium ${theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-600 text-gray-200'}`}>
             {theme === 'dark' ? 'Dark' : 'Light'}
@@ -107,25 +146,37 @@ const AdminDashboard: React.FC = () => {
           <TabButton tabName="payment-management" label="Payment Management" />
           <TabButton tabName="messages" label="Messages" />
         </nav>
-        <div className="mt-auto space-y-2 border-t border-neutral-light/20 pt-4">
+        <div className="mt-auto space-y-2 border-t border-neutral-light/20 pt-4 pb-safe-bottom">
           <button
             onClick={toggleTheme}
-            className="flex items-center w-full text-left p-2 rounded-md hover:bg-neutral-light/20 transition-colors duration-200"
+            className="flex items-center w-full text-left p-2 rounded-md hover:bg-neutral-light/20 transition-colors duration-200 touch-target"
           >
             {theme === 'dark' ? <Sun className="mr-3 h-5 w-5" /> : <Moon className="mr-3 h-5 w-5" />}
             {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
           </button>
-          <Link to="/" className="flex items-center w-full text-left p-2 rounded-md hover:bg-neutral-light/20 transition-colors duration-200">
+          <Link 
+            to="/" 
+            className="flex items-center w-full text-left p-2 rounded-md hover:bg-neutral-light/20 transition-colors duration-200 touch-target"
+            onClick={() => setIsSidebarOpen(false)}
+          >
             <Home className="mr-3 h-5 w-5" />
             View Site
           </Link>
-          <button onClick={logout} className="flex items-center w-full text-left p-2 rounded-md hover:bg-neutral-light/20 transition-colors duration-200">
+          <button 
+            onClick={() => {
+              logout();
+              setIsSidebarOpen(false);
+            }} 
+            className="flex items-center w-full text-left p-2 rounded-md hover:bg-neutral-light/20 transition-colors duration-200 touch-target"
+          >
             <LogOut className="mr-3 h-5 w-5" />
             Logout
           </button>
         </div>
       </aside>
-      <main className="flex-1 p-8 bg-background overflow-y-auto">
+
+      {/* Main Content - Responsive padding */}
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background overflow-y-auto pt-20 lg:pt-0 overflow-x-hidden">
         {renderContent()}
       </main>
     </div>
