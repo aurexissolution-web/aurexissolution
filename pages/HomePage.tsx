@@ -6,6 +6,7 @@ import TechnologyShowcase from '../components/public/TechnologyShowcase';
 import Portfolio from '../components/public/Portfolio';
 import Testimonials from '../components/public/Testimonials';
 import Footer from '../components/public/Footer';
+import ParallaxSection from '../components/effects/ParallaxSection';
 
 const HomePage: React.FC = () => {
   return (
@@ -13,10 +14,18 @@ const HomePage: React.FC = () => {
       <Header />
       <main className="flex-grow">
         <Hero />
-        <Services />
-        <TechnologyShowcase />
-        <Portfolio />
-        <Testimonials />
+        <ParallaxSection speed={0.3} fadeIn={true}>
+          <Services />
+        </ParallaxSection>
+        <ParallaxSection speed={0.5} direction="down" fadeIn={true}>
+          <TechnologyShowcase />
+        </ParallaxSection>
+        <ParallaxSection speed={0.4} fadeIn={true}>
+          <Portfolio />
+        </ParallaxSection>
+        <ParallaxSection speed={0.3} fadeIn={true}>
+          <Testimonials />
+        </ParallaxSection>
       </main>
       <Footer />
     </div>

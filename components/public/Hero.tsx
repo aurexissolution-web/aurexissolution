@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAppContext } from '../../hooks/useAppContext';
 import { ArrowRight, BarChart3 } from 'lucide-react';
+import ParallaxText from '../effects/ParallaxText';
 
 const Hero: React.FC = () => {
   const { siteContent } = useAppContext();
@@ -135,29 +136,39 @@ const Hero: React.FC = () => {
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent z-10"></div>
       
       <div className="relative z-20 px-4 sm:px-6 lg:px-8 hero-content transition-transform duration-300 ease-out container-mobile">
-        <h1 className="text-mobile-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-text-primary mb-4 animate-fade-in-down drop-shadow-lg leading-tight">
+        <ParallaxText
+          type="fadeUp"
+          delay={0.2}
+          className="text-mobile-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-text-primary mb-4 drop-shadow-lg leading-tight"
+        >
           {siteContent.heroTitle}
-        </h1>
-        <p className="text-mobile-base sm:text-lg md:text-xl text-text-secondary max-w-3xl mx-auto mb-6 sm:mb-8 animate-fade-in-up px-2">
+        </ParallaxText>
+        <ParallaxText
+          type="fadeUp"
+          delay={0.4}
+          className="text-mobile-base sm:text-lg md:text-xl text-text-secondary max-w-3xl mx-auto mb-6 sm:mb-8 px-2"
+        >
           {siteContent.heroSubtitle}
-        </p>
-        <div className="flex-mobile gap-4 justify-center items-center">
-          <button
-            onClick={handleNavigate}
-            className="btn-mobile bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-bold transition-all transform hover:scale-105 shadow-lg shadow-primary/30 animate-fade-in-up"
-          >
-            Get Started <ArrowRight size={18} className="icon-mobile ml-2" />
-          </button>
-          <button
-            onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-            className="btn-mobile border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold transition-all transform hover:scale-105 animate-fade-in-up"
-          >
-            Learn More
-          </button>
-        </div>
+        </ParallaxText>
+        <ParallaxText type="fadeUp" delay={0.6}>
+          <div className="flex-mobile gap-4 justify-center items-center">
+            <button
+              onClick={handleNavigate}
+              className="btn-mobile bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-bold transition-all transform hover:scale-105 shadow-lg shadow-primary/30"
+            >
+              Get Started <ArrowRight size={18} className="icon-mobile ml-2" />
+            </button>
+            <button
+              onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+              className="btn-mobile border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold transition-all transform hover:scale-105"
+            >
+              Learn More
+            </button>
+          </div>
+        </ParallaxText>
         
         {/* Dashboard Access for Logged-in Users */}
-        <div className="mt-8 animate-fade-in-up">
+        <ParallaxText type="fadeUp" delay={0.8} className="mt-8">
           <Link
             to="/dashboard"
             className="btn-mobile bg-surface/80 backdrop-blur-lg border border-neutral text-text-primary hover:text-primary font-medium transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
@@ -165,7 +176,7 @@ const Hero: React.FC = () => {
             <BarChart3 size={18} className="icon-mobile mr-2" />
             Access Your Dashboard
           </Link>
-        </div>
+        </ParallaxText>
       </div>
     </section>
   );
