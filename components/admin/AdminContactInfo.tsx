@@ -95,28 +95,28 @@ const AdminContactInfo: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-neutral mb-6">Contact Details</h2>
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md space-y-6">
+    <div className="text-text-primary">
+      <h2 className="text-2xl font-bold text-text-primary mb-6">Contact Details</h2>
+      <form onSubmit={handleSubmit} className="bg-surface p-6 rounded-xl shadow-lg shadow-neutral/10 border border-neutral space-y-6">
         <div>
-          <h3 className="text-lg font-semibold border-b pb-2 mb-4">Page Copy</h3>
+          <h3 className="text-lg font-semibold text-text-primary border-b border-neutral pb-2 mb-4">Page Copy</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-neutral-light mb-1">Section Heading</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">Section Heading</label>
               <input
                 value={formData.heading}
                 onChange={e => handleFieldChange('heading', e.target.value)}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-3 rounded-lg border border-neutral bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Get in touch"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-light mb-1">Description</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">Description</label>
               <textarea
                 value={formData.description}
                 onChange={e => handleFieldChange('description', e.target.value)}
                 rows={4}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-3 rounded-lg border border-neutral bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Let visitors know how best to reach you"
               />
             </div>
@@ -124,22 +124,22 @@ const AdminContactInfo: React.FC = () => {
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold border-b pb-2 mb-4 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-text-primary border-b border-neutral pb-2 mb-4 flex items-center justify-between">
             Contact Persons
             <button
               type="button"
               onClick={handleAddContact}
-              className="flex items-center gap-2 text-sm bg-primary text-white px-3 py-1.5 rounded-md hover:bg-primary-dark"
+              className="flex items-center gap-2 text-sm bg-primary text-white px-3 py-1.5 rounded-md hover:opacity-90"
             >
               <Plus size={16} /> Add Contact
             </button>
           </h3>
           {formData.contacts.length === 0 && (
-            <p className="text-sm text-neutral-light mb-4">No contacts added yet.</p>
+            <p className="text-sm text-text-secondary mb-4">No contacts added yet.</p>
           )}
           <div className="space-y-4">
             {formData.contacts.map(contact => (
-              <div key={contact.id} className="border rounded-lg p-4 space-y-3">
+              <div key={contact.id} className="border border-neutral rounded-lg p-4 space-y-3 bg-background/60">
                 <div className="flex justify-between items-center">
                   <h4 className="font-semibold text-text-primary">Contact</h4>
                   <button
@@ -153,29 +153,29 @@ const AdminContactInfo: React.FC = () => {
                 </div>
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-neutral-light mb-1">Name</label>
+                    <label className="block text-xs font-medium text-text-secondary mb-1">Name</label>
                     <input
                       value={contact.name}
                       onChange={e => handleContactChange(contact.id, 'name', e.target.value)}
-                      className="w-full p-2 border rounded-md"
+                      className="w-full p-2.5 border border-neutral rounded-md bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="Person's name"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-neutral-light mb-1">Role / Label</label>
+                    <label className="block text-xs font-medium text-text-secondary mb-1">Role / Label</label>
                     <input
                       value={contact.role || ''}
                       onChange={e => handleContactChange(contact.id, 'role', e.target.value)}
-                      className="w-full p-2 border rounded-md"
+                      className="w-full p-2.5 border border-neutral rounded-md bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="e.g. Business Inquiries"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-neutral-light mb-1">Phone Number</label>
+                    <label className="block text-xs font-medium text-text-secondary mb-1">Phone Number</label>
                     <input
                       value={contact.phone}
                       onChange={e => handleContactChange(contact.id, 'phone', e.target.value)}
-                      className="w-full p-2 border rounded-md"
+                      className="w-full p-2.5 border border-neutral rounded-md bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="+60 xx-xxxx xxx"
                     />
                   </div>
@@ -186,39 +186,39 @@ const AdminContactInfo: React.FC = () => {
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold border-b pb-2 mb-4">Office Details</h3>
+          <h3 className="text-lg font-semibold text-text-primary border-b border-neutral pb-2 mb-4">Office Details</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-neutral-light mb-1">Office Label</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">Office Label</label>
               <input
                 value={formData.office?.label || ''}
                 onChange={e => handleOfficeChange('label', e.target.value)}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-3 border border-neutral rounded-lg bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Our Office"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-light mb-1">Office Address</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">Office Address</label>
               <textarea
                 value={formData.office?.address || ''}
                 onChange={e => handleOfficeChange('address', e.target.value)}
                 rows={3}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-3 border border-neutral rounded-lg bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Full address"
               />
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 pt-4 border-t">
+        <div className="flex items-center gap-3 pt-4 border-t border-neutral">
           <button
             type="submit"
             disabled={isSaving}
-            className="bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded-lg disabled:opacity-60"
+            className="bg-primary hover:opacity-90 text-white font-semibold py-2 px-4 rounded-lg disabled:opacity-60"
           >
             {isSaving ? 'Saving...' : 'Save Contact Info'}
           </button>
-          {saved && <span className="text-green-600 text-sm">Saved!</span>}
+          {saved && <span className="text-green-500 text-sm">Saved!</span>}
         </div>
       </form>
     </div>

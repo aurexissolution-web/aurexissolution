@@ -88,7 +88,7 @@ const AdminDashboard: React.FC = () => {
   );
 
   return (
-    <div className="flex min-h-screen bg-background relative">
+    <div className="admin-panel flex min-h-screen bg-background relative">
       {/* Mobile Header with Hamburger */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-surface shadow-md border-b border-neutral">
         <div className="flex items-center justify-between p-4">
