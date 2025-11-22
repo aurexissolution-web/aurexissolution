@@ -1,13 +1,144 @@
 /* Tailwind CSS directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 /* Global reset for better responsive behavior */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* Global theme variables */
+:root {
+  --background: #f1f5f9;
+  --surface: #ffffff;
+  --primary: #0ea5e9;
+  --secondary: #a855f7;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --neutral: #e2e8f0;
+  --neutral-light: #f1f5f9;
+}
+
+.dark {
+  --background: #0d1117;
+  --surface: #161b22;
+  --text-primary: #c9d1d9;
+  --text-secondary: #8b949e;
+  --neutral: #30363d;
+  --neutral-light: #8b949e;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.bg-grid-pattern {
+  background-image: linear-gradient(var(--text-secondary) 1px, transparent 1px),
+    linear-gradient(90deg, var(--text-secondary) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Admin dashboard theme harmonization */
+.admin-panel {
+  background-color: var(--background);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.admin-panel .admin-panel-muted {
+  color: var(--text-secondary);
+}
+
+.admin-panel .surface-card {
+  background-color: var(--surface);
+  border: 1px solid var(--neutral);
+}
+
+.admin-panel :is(.bg-white, .bg-gray-50, .bg-gray-100, .bg-gray-200, .bg-neutral-light) {
+  background-color: var(--surface) !important;
+  color: var(--text-primary);
+}
+
+.admin-panel :is(.bg-gray-300, .bg-gray-400, .bg-gray-500, .bg-gray-600, .bg-gray-700, .bg-gray-800) {
+  background-color: color-mix(in srgb, var(--surface) 85%, var(--primary) 5%) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--neutral) !important;
+}
+
+.dark .admin-panel :is(.bg-gray-300, .bg-gray-400, .bg-gray-500, .bg-gray-600, .bg-gray-700, .bg-gray-800) {
+  background-color: color-mix(in srgb, var(--background) 75%, white 10%) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.dark .admin-panel {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+.admin-panel :is(.text-gray-800, .text-gray-900, .text-neutral, .text-gray-950) {
+  color: var(--text-primary) !important;
+}
+
+.admin-panel :is(.text-gray-500, .text-gray-600, .text-gray-700, .text-neutral-light, .text-gray-400, .text-gray-300) {
+  color: var(--text-secondary) !important;
+}
+
+.admin-panel :is(.border-gray-200, .border-gray-300, .border-neutral, .border-neutral-light) {
+  border-color: var(--neutral) !important;
+}
+
+.admin-panel :is(input.bg-white, textarea.bg-white, select.bg-white) {
+  background-color: var(--background) !important;
+}
+
+.admin-panel input,
+.admin-panel textarea,
+.admin-panel select {
+  border-color: var(--neutral);
+  color: var(--text-primary);
+}
+
+.admin-panel input:focus,
+.admin-panel textarea:focus,
+.admin-panel select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.admin-panel button:not(.text-primary):not(.bg-transparent) {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.admin-panel :is(.hover\:bg-gray-50:hover, .hover\:bg-gray-100:hover, .hover\:bg-gray-200:hover,
+  .hover\:bg-gray-300:hover, .hover\:bg-gray-400:hover, .hover\:bg-gray-500:hover,
+  .hover\:bg-gray-600:hover, .hover\:bg-gray-700:hover, .hover\:bg-gray-800:hover) {
+  background-color: color-mix(in srgb, var(--primary) 25%, var(--surface)) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark .admin-panel :is(.hover\:bg-gray-50:hover, .hover\:bg-gray-100:hover, .hover\:bg-gray-200:hover,
+  .hover\:bg-gray-300:hover, .hover\:bg-gray-400:hover, .hover\:bg-gray-500:hover,
+  .hover\:bg-gray-600:hover, .hover\:bg-gray-700:hover, .hover\:bg-gray-800:hover) {
+  background-color: color-mix(in srgb, var(--primary) 25%, var(--background)) !important;
+  color: var(--text-primary) !important;
+}
+
+.admin-panel button.bg-white:hover,
+.admin-panel button.bg-gray-50:hover {
+  background-color: color-mix(in srgb, var(--primary) 10%, var(--surface)) !important;
+}
+
+.admin-panel .hover\:text-gray-700:hover,
+.admin-panel .hover\:text-gray-600:hover {
+  color: var(--text-primary) !important;
 }
 
 /* Safari/Opera compatibility for logout message */
