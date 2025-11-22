@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import Header from '../components/public/Header';
 import Footer from '../components/public/Footer';
-import { MapPin, Mail, Phone } from 'lucide-react';
+import { MapPin, Phone } from 'lucide-react';
 import { useAppContext } from '../hooks/useAppContext';
 
 const ContactPage: React.FC = () => {
-  const { addMessage } = useAppContext();
+  const { addMessage, siteContent } = useAppContext();
+  const contactInfo = siteContent.contactInfo;
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'idle', message: string }>({ type: 'idle', message: '' });
   const [loading, setLoading] = useState(false);
+
+  const formatPhoneForLink = (phone: string) => phone.replace(/[^+\d]/g, '');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,38 +58,49 @@ const ContactPage: React.FC = () => {
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
               {/* Contact Info */}
               <div className="order-2 lg:order-1">
-                <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-4 sm:mb-6">Contact Information</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-4 sm:mb-6">{contactInfo.heading}</h2>
                 <p className="text-sm sm:text-base text-text-secondary mb-6 sm:mb-8">
-                  Fill up the form and our Team will get back to you within 24 hours. Or, reach out to us directly through one of the channels below.
+                  {contactInfo.description}
                 </p>
                 <div className="space-y-4 sm:space-y-6">
-                  <div className="flex items-start">
-                    <div className="bg-primary/10 text-primary p-2 sm:p-3 rounded-full mr-3 sm:mr-4 flex-shrink-0">
-                      <Phone size={20} className="sm:w-6 sm:h-6" />
+                  {contactInfo.contacts.length > 0 ? (
+                    contactInfo.contacts.map(contact => (
+                      <div key={contact.id} className="flex items-start">
+                        <div className="bg-primary/10 text-primary p-2 sm:p-3 rounded-full mr-3 sm:mr-4 flex-shrink-0">
+                          <Phone size={20} className="sm:w-6 sm:h-6" />
+                        </div>
+                        <div>
+                          <h3 className="text-base sm:text-lg font-semibold text-text-primary">
+                            {contact.name}
+                          </h3>
+                          {contact.role && (
+                            <p className="text-xs sm:text-sm text-text-secondary mb-1">{contact.role}</p>
+                          )}
+                          {contact.phone && (
+                            <a 
+                              href={`tel:${formatPhoneForLink(contact.phone)}`}
+                              className="text-sm sm:text-base text-text-secondary hover:text-primary transition-colors touch-target"
+                            >
+                              {contact.phone}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-text-secondary">No contact persons configured yet.</p>
+                  )}
+                  {contactInfo.office?.address && (
+                    <div className="flex items-start">
+                      <div className="bg-primary/10 text-primary p-2 sm:p-3 rounded-full mr-3 sm:mr-4 flex-shrink-0">
+                        <MapPin size={20} className="sm:w-6 sm:h-6" />
+                      </div>
+                      <div>
+                        <h3 className="text-base sm:text-lg font-semibold text-text-primary">{contactInfo.office.label}</h3>
+                        <p className="text-sm sm:text-base text-text-secondary leading-relaxed">{contactInfo.office.address}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-base sm:text-lg font-semibold text-text-primary">Mr. Jay</h3>
-                      <a href="tel:+60164071129" className="text-sm sm:text-base text-text-secondary hover:text-primary transition-colors touch-target">+60 16-407 1129</a>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="bg-primary/10 text-primary p-2 sm:p-3 rounded-full mr-3 sm:mr-4 flex-shrink-0">
-                      <Phone size={20} className="sm:w-6 sm:h-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-base sm:text-lg font-semibold text-text-primary">Mr. Shan</h3>
-                      <a href="tel:+601171113184" className="text-sm sm:text-base text-text-secondary hover:text-primary transition-colors touch-target">+60 11-7111 3184</a>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="bg-primary/10 text-primary p-2 sm:p-3 rounded-full mr-3 sm:mr-4 flex-shrink-0">
-                      <MapPin size={20} className="sm:w-6 sm:h-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-base sm:text-lg font-semibold text-text-primary">Our Office</h3>
-                      <p className="text-sm sm:text-base text-text-secondary leading-relaxed">Amanjaya, Jalan Badlishah, Bandar Amanjaya, 08000 Sungai Petani, Kedah</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
 

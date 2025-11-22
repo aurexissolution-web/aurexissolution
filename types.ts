@@ -128,6 +128,23 @@ export interface Testimonial {
   company: string;
 }
 
+export interface ContactPerson {
+  id: string;
+  name: string;
+  phone: string;
+  role?: string;
+}
+
+export interface ContactInfo {
+  heading: string;
+  description: string;
+  contacts: ContactPerson[];
+  office: {
+    label: string;
+    address: string;
+  };
+}
+
 export interface SiteContent {
   heroTitle: string;
   heroSubtitle: string;
@@ -141,6 +158,7 @@ export interface SiteContent {
     instagram?: string;
     tiktok?: string;
   };
+  contactInfo: ContactInfo;
 }
 
 export type UserRole = 

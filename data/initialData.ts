@@ -294,6 +294,28 @@ export const INITIAL_SITE_CONTENT: SiteContent = {
     linkedin: '',
     instagram: '',
     tiktok: ''
+  },
+  contactInfo: {
+    heading: 'Contact Information',
+    description: "Fill up the form and our team will get back to you within 24 hours. Or, reach out to us directly through one of the channels below.",
+    contacts: [
+      {
+        id: 'contact-1',
+        name: 'Mr. Jay',
+        role: 'Business Inquiries',
+        phone: '+60 16-407 1129'
+      },
+      {
+        id: 'contact-2',
+        name: 'Mr. Shan',
+        role: 'Partnerships & Operations',
+        phone: '+60 11-7111 3184'
+      }
+    ],
+    office: {
+      label: 'Our Office',
+      address: 'Amanjaya, Jalan Badlishah, Bandar Amanjaya, 08000 Sungai Petani, Kedah'
+    }
   }
 };
 

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useAppContext } from '../../hooks/useAppContext';
 import { useTheme } from '../../hooks/useTheme';
 import AdminSiteContent from './AdminSiteContent';
+import AdminContactInfo from './AdminContactInfo';
 import AdminServices from './AdminServices';
 import AdminPortfolio from './AdminPortfolio';
 import AdminTestimonials from './AdminTestimonials';
@@ -21,7 +22,7 @@ import UnifiedProjectManagement from './UnifiedProjectManagement';
 import AdminInvoiceManagement from './AdminInvoiceManagement';
 import AdminFreelancerMonitoring from './AdminFreelancerMonitoring';
 
-type Tab = 'content' | 'services' | 'portfolio' | 'testimonials' | 'invoices' | 'quotations' | 'payment-management' | 'messages' | 'founders' | 'blog' | 'tickets' | 'chat' | 'project-management' | 'freelancer-monitoring' | 'telegram' | 'ai-settings';
+type Tab = 'content' | 'contact-info' | 'services' | 'portfolio' | 'testimonials' | 'invoices' | 'quotations' | 'payment-management' | 'messages' | 'founders' | 'blog' | 'tickets' | 'chat' | 'project-management' | 'freelancer-monitoring' | 'telegram' | 'ai-settings';
 
 const AdminDashboard: React.FC = () => {
   const { logout } = useAppContext();
@@ -33,6 +34,8 @@ const AdminDashboard: React.FC = () => {
     switch (activeTab) {
       case 'content':
         return <AdminSiteContent />;
+      case 'contact-info':
+        return <AdminContactInfo />;
       case 'services':
         return <AdminServices />;
       case 'portfolio':
@@ -130,6 +133,7 @@ const AdminDashboard: React.FC = () => {
         </div>
         <nav className="flex flex-col space-y-2 flex-grow">
           <TabButton tabName="content" label="Site Content" />
+          <TabButton tabName="contact-info" label="Contact Details" />
           <TabButton tabName="services" label="Services" />
           <TabButton tabName="portfolio" label="Portfolio" />
           <TabButton tabName="testimonials" label="Testimonials" />

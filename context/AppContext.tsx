@@ -1,5 +1,5 @@
 import React, { createContext, useState, ReactNode, useEffect, useMemo, useContext } from 'react';
-import type { Service, Project, Testimonial, SiteContent, User, Invoice, Quotation, Attachment, ProjectRequest, Message, Founder, LineItem, Post, UserRole, PaymentReceipt, PaymentInvoice } from '../types';
+import type { Service, Project, Testimonial, SiteContent, User, Invoice, Quotation, Attachment, ProjectRequest, Message, Founder, LineItem, Post, UserRole, PaymentReceipt, PaymentInvoice, ContactPerson } from '../types';
 import { db, auth } from '../firebase/config';
 import { 
   collection, onSnapshot, doc, getDoc, getDocs, writeBatch,
@@ -11,7 +11,7 @@ import {
 } from "firebase/auth";
 import { GoogleGenAI, Type } from "@google/genai";
 import { UniqueCodeGenerator } from '../utils/uniqueCodeGenerator';
-import { INITIAL_FOUNDERS } from '../data/initialData';
+import { INITIAL_FOUNDERS, INITIAL_SITE_CONTENT } from '../data/initialData';
 import { logLogin, logLogout, logUserCreation, logUserUpdate, logUserDeletion } from '../services/auditLogService';
 import { getDashboardRoute, hasPermission, Permission } from '../services/permissionsService';
 
@@ -276,20 +276,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [projects, setProjects] = useState<Project[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [siteContent, setSiteContent] = useState<SiteContent>({
-    heroTitle: 'Welcome to Aurexis Solution',
-    heroSubtitle: 'Your trusted technology partner',
-    aboutTitle: 'About Us',
-    aboutText: 'We are a leading technology company...',
-    logoUrl: '',
-    socialMedia: {
-      facebook: '',
-      twitter: '',
-      linkedin: '',
-      instagram: '',
-      tiktok: ''
-    }
-  });
+  const [siteContent, setSiteContent] = useState<SiteContent>(INITIAL_SITE_CONTENT);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -438,35 +425,26 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           docSnap => {
             if (docSnap.exists()) {
               const data = docSnap.data() as SiteContent;
-              // Ensure socialMedia object exists
-              if (!data.socialMedia) {
-                data.socialMedia = {
-                  facebook: '',
-                  twitter: '',
-                  linkedin: '',
-                  instagram: '',
-                  tiktok: ''
-                };
-              }
-              setSiteContent(data);
-            } else {
-              console.log('Site content document does not exist, using defaults');
-              // Initialize with default data if document doesn't exist
-              const defaultContent = {
-                heroTitle: 'Innovative IT Solutions for a Digital World',
-                heroSubtitle: 'Aurexis Solution delivers cutting-edge technology services that drive business growth and efficiency. Partner with us to unlock your potential.',
-                aboutTitle: 'About Aurexis Solution',
-                aboutText: 'Founded on the principle of innovation, Aurexis Solution is a premier IT services provider dedicated to helping businesses navigate the complexities of the digital landscape.',
-                logoUrl: '',
+              const mergedContent: SiteContent = {
+                ...INITIAL_SITE_CONTENT,
+                ...data,
                 socialMedia: {
-                  facebook: '',
-                  twitter: '',
-                  linkedin: '',
-                  instagram: '',
-                  tiktok: ''
+                  ...INITIAL_SITE_CONTENT.socialMedia,
+                  ...(data.socialMedia || {})
+                },
+                contactInfo: {
+                  ...INITIAL_SITE_CONTENT.contactInfo,
+                  ...(data.contactInfo || {}),
+                  contacts: (data.contactInfo?.contacts?.length ? data.contactInfo.contacts : INITIAL_SITE_CONTENT.contactInfo.contacts).map((contact, index) => ({
+                    ...contact,
+                    id: contact.id || `contact-${index + 1}`
+                  }))
                 }
               };
-              setSiteContent(defaultContent);
+              setSiteContent(mergedContent);
+            } else {
+              console.log('Site content document does not exist, using defaults');
+              setSiteContent(INITIAL_SITE_CONTENT);
             }
           },
           error => {
