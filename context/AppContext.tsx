@@ -300,6 +300,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setter(prev => (prev.length > 0 ? prev : fallback));
   };
 
+  const safeString = (value: string | undefined | null, fallback: string) =>
+    value && value.trim().length ? value : fallback;
+
+  const safeArray = <T,>(value: T[] | undefined | null, fallback: T[]) =>
+    value && value.length ? value : fallback;
+
   const normalizeDate = (value: unknown): Date | null => {
     if (!value) return null;
     if (value instanceof Date) return value;
@@ -409,13 +415,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setFounders([]);
           }
         ),
-        onSnapshot(doc(db, 'siteContent', 'main'), 
+        onSnapshot(
+          doc(db, 'siteContent', 'main'),
           docSnap => {
             if (docSnap.exists()) {
-              const data = docSnap.data() as SiteContent;
+              const data = docSnap.data() as Partial<SiteContent>;
               const mergedContent: SiteContent = {
                 ...INITIAL_SITE_CONTENT,
                 ...data,
+                heroTitle: safeString(data.heroTitle, INITIAL_SITE_CONTENT.heroTitle),
+                heroSubtitle: safeString(data.heroSubtitle, INITIAL_SITE_CONTENT.heroSubtitle),
+                aboutTitle: safeString(data.aboutTitle, INITIAL_SITE_CONTENT.aboutTitle),
+                aboutText: safeString(data.aboutText, INITIAL_SITE_CONTENT.aboutText),
+                logoUrl: safeString(data.logoUrl, INITIAL_SITE_CONTENT.logoUrl),
                 socialMedia: {
                   ...INITIAL_SITE_CONTENT.socialMedia,
                   ...(data.socialMedia || {})
@@ -423,7 +435,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 contactInfo: {
                   ...INITIAL_SITE_CONTENT.contactInfo,
                   ...(data.contactInfo || {}),
-                  contacts: (data.contactInfo?.contacts?.length ? data.contactInfo.contacts : INITIAL_SITE_CONTENT.contactInfo.contacts).map((contact, index) => ({
+                  description: safeString(
+                    data.contactInfo?.description,
+                    INITIAL_SITE_CONTENT.contactInfo.description
+                  ),
+                  heading: safeString(
+                    data.contactInfo?.heading,
+                    INITIAL_SITE_CONTENT.contactInfo.heading
+                  ),
+                  contacts: safeArray(
+                    data.contactInfo?.contacts,
+                    INITIAL_SITE_CONTENT.contactInfo.contacts
+                  ).map((contact, index) => ({
                     ...contact,
                     id: contact.id || `contact-${index + 1}`
                   }))
@@ -436,7 +459,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             }
           },
           error => {
-            console.error("Error fetching site content:", error);
+            console.error('Error fetching site content:', error);
             // Keep default site content on error
           }
         ),
