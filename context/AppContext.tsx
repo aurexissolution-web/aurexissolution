@@ -11,7 +11,7 @@ import {
 } from "firebase/auth";
 import { GoogleGenAI, Type } from "@google/genai";
 import { UniqueCodeGenerator } from '../utils/uniqueCodeGenerator';
-import { INITIAL_FOUNDERS, INITIAL_SITE_CONTENT } from '../data/initialData';
+import { INITIAL_FOUNDERS, INITIAL_SITE_CONTENT, INITIAL_PROJECTS, INITIAL_SERVICES, INITIAL_TESTIMONIALS } from '../data/initialData';
 import { logLogin, logLogout, logUserCreation, logUserUpdate, logUserDeletion } from '../services/auditLogService';
 import { getDashboardRoute, hasPermission, Permission } from '../services/permissionsService';
 
@@ -45,9 +45,10 @@ export interface Task {
   freelancerSubmissions?: TaskAttachment[]; // Files from freelancer as completed work
   progressNotes?: string; // Progress update notes
   submissionNotes?: string; // Submission notes
-  submittedAt?: any; // Firebase Timestamp
-  lastUpdated?: any; // Firebase Timestamp
+  submittedAt?: Date | any; // Firebase Timestamp
+  lastUpdated?: Date | any; // Firebase Timestamp
   createdAt: Date;
+  updatedAt?: Date | any;
   // Commission fields
   commissionRate?: number; // Percentage (e.g., 10 for 10%)
   commissionAmount?: number; // Fixed amount in currency
@@ -295,6 +296,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [founders, setFounders] = useState<Founder[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
 
+  const applyArrayFallback = <T,>(setter: React.Dispatch<React.SetStateAction<T[]>>, fallback: T[]) => {
+    setter(prev => (prev.length > 0 ? prev : fallback));
+  };
+
+  const normalizeDate = (value: unknown): Date | null => {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value === 'number' || typeof value === 'string') {
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+    try {
+      if (typeof (value as { toDate?: () => Date }).toDate === 'function') {
+        return (value as { toDate: () => Date }).toDate();
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  };
+
+  const ensureDate = (value: unknown, fallback: Date = new Date()) => normalizeDate(value) ?? fallback;
+
   // --- DATA SEEDING REMOVED ---
   // --- MOCK DATA REMOVED - Using ONLY Firebase data ---
 
@@ -310,35 +334,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             const servicesData = snap.docs.map(doc => ({ ...doc.data(), id: doc.id } as Service));
             if (servicesData.length === 0) {
               console.log('No services found, using default services');
-              // Use default services if none exist
-              const defaultServices = [
-                {
-                  id: '1',
-                  icon: 'Cloud',
-                  title: 'Cloud Solutions',
-                  description: 'Scalable and secure cloud infrastructure to power your business growth.',
-                  detailedDescription: ['Comprehensive cloud solutions for modern businesses.'],
-                  keyFeatures: ['Scalable Infrastructure', 'High Availability'],
-                  technologies: ['AWS', 'Azure', 'Google Cloud']
-                },
-                {
-                  id: '2',
-                  icon: 'Shield',
-                  title: 'Cybersecurity',
-                  description: 'Protect your digital assets with comprehensive cybersecurity services.',
-                  detailedDescription: ['Advanced security solutions to protect your business.'],
-                  keyFeatures: ['Threat Analysis', '24/7 Monitoring'],
-                  technologies: ['SIEM', 'Firewalls', 'EDR']
-                }
-              ];
-              setServices(defaultServices);
+              setServices(INITIAL_SERVICES);
             } else {
               setServices(servicesData);
             }
           },
           error => {
             console.error("Error fetching services:", error);
-            setServices([]);
+            applyArrayFallback(setServices, INITIAL_SERVICES);
           }
         ),
         onSnapshot(query(collection(db, 'projects'), orderBy('createdAt', 'desc')), 
@@ -355,7 +358,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           },
           error => {
             console.error("❌ Error fetching projects:", error);
-            setProjects([]); // Keep empty on error
+            applyArrayFallback(setProjects, INITIAL_PROJECTS);
           }
         ),
         onSnapshot(query(collection(db, 'users'), orderBy('createdAt', 'desc')), 
@@ -380,29 +383,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             const testimonialsData = snap.docs.map(doc => ({ ...doc.data(), id: doc.id } as Testimonial));
             if (testimonialsData.length === 0) {
               console.log('No testimonials found, using default testimonials');
-              // Use default testimonials if none exist
-              const defaultTestimonials = [
-                {
-                  id: '1',
-                  quote: "Aurexis Solution transformed our operations. Their cloud solution is robust, scalable, and has significantly reduced our IT overhead.",
-                  author: 'Jane Doe',
-                  company: 'CEO, Innovate Inc.'
-                },
-                {
-                  id: '2',
-                  quote: "The custom software they developed for us was a game-changer. It's intuitive, powerful, and perfectly aligned with our workflow.",
-                  author: 'John Smith',
-                  company: 'COO, Global Logistics'
-                }
-              ];
-              setTestimonials(defaultTestimonials);
+              setTestimonials(INITIAL_TESTIMONIALS);
             } else {
               setTestimonials(testimonialsData);
             }
           },
           error => {
             console.error("Error fetching testimonials:", error);
-            setTestimonials([]);
+            applyArrayFallback(setTestimonials, INITIAL_TESTIMONIALS);
           }
         ),
         onSnapshot(query(collection(db, 'founders'), orderBy('name')), 
@@ -706,16 +694,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         query(collection(db, 'tasks'), orderBy('createdAt', 'desc')), 
         snap => {
           const tasksData = snap.docs.map(doc => {
-            const data = doc.data();
-            return {
+            const data = doc.data() as Task;
+            const normalizedTask: Task = {
               ...data,
               id: doc.id,
-              deadline: data.deadline?.toDate ? data.deadline.toDate() : new Date(data.deadline),
-              createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
-              updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
-              submittedAt: data.submittedAt?.toDate ? data.submittedAt.toDate() : null,
-              lastUpdated: data.lastUpdated?.toDate ? data.lastUpdated.toDate() : null,
-            } as Task;
+              deadline: ensureDate((data as any).deadline, new Date()),
+              createdAt: ensureDate((data as any).createdAt, new Date()),
+              updatedAt: ensureDate((data as any).updatedAt, new Date()),
+              submittedAt: normalizeDate((data as any).submittedAt) ?? (data as any).submittedAt ?? null,
+              lastUpdated: normalizeDate((data as any).lastUpdated) ?? (data as any).lastUpdated ?? null,
+            };
+            return normalizedTask;
           });
           
           console.log('✅ Tasks synced:', tasksData.length, '| Changes:', snap.docChanges().length);
